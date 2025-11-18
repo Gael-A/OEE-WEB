@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 viewport-fit=cover">
+    <title>{{ translations.title_user_administrator_page }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toolbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/clock.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user-admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+</head>
+
+<body>
+    {% set nav_items = [] %}
+
+    {% set show_mode_toggle = True %}
+    {% set toolbar_style = 'search' %}
+    {% include 'modules/menus.html' %}
+
+    <div class="main">
+        <div class="content">
+            <div class="admin-panel">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort-key="id">{{ translations.user_id }}</th>
+                            <th class="sortable" data-sort-key="first_name">{{ translations.user_first_name }}</th>
+                            <th class="sortable" data-sort-key="last_name">{{ translations.user_last_name }}</th>
+                            <th class="sortable" data-sort-key="email">{{ translations.user_email }}</th>
+                            <th>{{ translations.user_role }}</th>
+                            <th>{{ translations.user_admin_actions_header }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <tr id="add-user-row">
+                            <td><input type="text" id="new-user-id" name="id" placeholder="{{ translations.user_id }}"></td>
+                            <td><input type="text" id="new-user-first-name" name="first_name" placeholder="{{ translations.user_first_name }}"></td>
+                            <td><input type="text" id="new-user-last-name" name="last_name" placeholder="{{ translations.user_last_name }}"></td>
+                            <td><input type="email" id="new-user-email" name="email" placeholder="{{ translations.user_email }}"></td>
+                            <td>
+                                <select id="new-user-role" name="role">
+                                    <option value="user" selected>{{ translations.user_role_user }}</option>
+                                    <option value="production_leader">{{ translations.user_role_production_leader }}</option>
+                                    <option value="supervisor">{{ translations.user_role_supervisor }}</option>
+                                    <option value="admin">{{ translations.user_role_admin }}</option>
+                                </select>
+                            </td>
+                            <td class="actions-cell">
+                                <div class="action-button add-user"
+                                    title="{{ translations.toolbar_generic_button_text | default('Add User') }}">
+                                    <img src="{{ url_for('static', filename='svg/action-user-add.svg') }}"
+                                        alt="{{ translations.toolbar_generic_button_text | default('Add User') }}">
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="toast" class="toast"></div>
+        </div>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='js/tool-functionality.js') }}" data-loader="viewer" role="{{ session.get('role') }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/user-admin.js') }}"></script>
+    <script>
+        window.translations = {{ translations | tojson }};
+        window.currentUserId = "{{ current_user_id or '' }}";
+        
+        const sessionTimeout = {{ session_timeout|default (0) }};
+        const logoutUrl = "{{ url_for('auth.logout_user') }}";
+        initSessionTimeout(sessionTimeout, logoutUrl);
+    </script>
+
+</body>
+
+</html>

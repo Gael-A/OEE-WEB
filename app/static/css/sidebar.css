@@ -1,0 +1,144 @@
+.contracted-sidebar,
+.extended-sidebar {
+    background-color: var(--brand-color);
+    transition: transform 0.3s ease;
+    transform: translateX(-125%);
+    color: white;
+    box-sizing: border-box;
+    padding: 16px;
+    border-top-right-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+    position: fixed;
+    top: 0;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100px;
+    z-index: 1001;
+}
+
+.extended-sidebar {
+    width: 300px;
+    align-items: flex-start;
+}
+
+.contracted-sidebar.visible,
+.extended-sidebar.visible {
+    transform: translateX(0);
+}
+
+.sidebar-logo {
+    width: 60px;
+    height: auto;
+    margin: 4px;
+    margin-bottom: 16px;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.sidebar-toggle {
+    position: fixed;
+    top: 93dvh;
+    left: 25px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    z-index: 1002;
+}
+
+.sidebar-toggle-icon {
+    width: 50px;
+    height: 50px;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-toggle-icon.right {
+    transform: rotate(0deg);
+}
+
+.sidebar-toggle-icon.left {
+    transform: rotate(180deg);
+}
+
+.sidebar-toggle:hover {
+    transform: scale(1.1);
+}
+
+.sidebar-option {
+    display: flex;
+    align-items: center;
+    user-select: none;
+    -webkit-user-drag: none;
+    cursor: pointer;
+}
+
+.sidebar-option-icon {
+    width: 30px;
+    height: 30px;
+    margin: 19px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    -webkit-user-drag: none;
+    user-select: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.sidebar-option>.sidebar-option-icon {
+    margin-right: 5px;
+}
+
+#mobile-actions-container {
+    margin-top: auto;
+    margin-bottom: 50px;
+}
+
+.sidebar-divider {
+    height: 1px;
+    width: 80%;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: 1rem auto;
+}
+
+.sidebar-actions-wrapper > .sidebar-option-icon {
+    margin-top: 10px;
+}
+
+.sidebar-section-header {
+    font-weight: bold;
+    user-select: none;
+}
+
+.sidebar-option a, .sidebar-option span {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+.sidebar-option-icon:hover  {
+    transform: scale(1.1);
+}
+
+.sidebar-option:hover .sidebar-option-icon {
+    transform: scale(1.1);
+}
+
+.sidebar-option:hover a, .sidebar-option:hover span {
+    color: var(--secondary-color-glow);
+}
+
+@media (max-width: 768px) {
+    .extended-sidebar {
+        width: 100dvw;
+        border-radius: 0;
+    }
+
+    .extended-sidebar .sidebar-actions-wrapper {
+        max-height: 50%;
+        width: 100%;
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
+}

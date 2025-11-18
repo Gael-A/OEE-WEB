@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla de Panel - ILC Dover</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toolbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/clock.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/timeline.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/barchart.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/numerical.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table-whiteboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+    <script src="{{ url_for('static', filename='js/module-timeline.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/module-barchart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/module-linechart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/module-status.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/module-numerical-data.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/module-report-chart.js') }}"></script>
+
+    <style>
+        .chart-body {
+            height: 130px;
+        }
+
+        .chart-body .dispensable {
+            display: none;
+        }
+
+        .timeline-body {
+            max-height: 250px;
+        }
+
+        .content {
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .clock-container {
+            width: 200px;
+            height: 80px;
+        }
+
+        .clock {
+            font-size: xxx-large;
+        }
+
+        .header-report {
+            margin-bottom: 0;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .body-report {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .body-report,
+        .header-report {
+            padding: .5rem;
+        }
+
+        .grid-12,
+        .report-viewer-section {
+            min-height: 80dvh;
+        }
+
+                .report-chart {
+            height: auto;
+        }
+
+        .report-chart-body {
+            height: 650px;
+        }
+
+        .grid-12.col-span-4 .report-chart .report-chart-body {
+            height: 250px;
+        }
+    </style>
+</head>
+
+<body>
+
+    {% set nav_items = [
+    { 'id': 'barcharts', 'icon': 'svg/chart-column.svg', 'alt_text': translations.alt_charts, 'label':
+    translations.charts },
+    { 'id': 'timelines', 'icon': 'svg/chart-timeline.svg', 'alt_text': translations.alt_timelines, 'label':
+    translations.timeline },
+    { 'id': 'report-charts', 'icon': 'svg/chart-bullet.svg', 'alt_text': translations.alt_report_charts, 'label':
+    translations.report_charts },
+    { 'id': 'report', 'icon': 'svg/icon-report.svg', 'alt_text': translations.alt_hourly_report, 'label':
+    translations.hourly_report },
+    { 'id': 'summary', 'icon': 'svg/icon-result.svg', 'alt_text': translations.alt_summary, 'label':
+    translations.availability }
+    ] %}
+
+    {% set show_mode_toggle = True %}
+
+    {% include 'modules/menus.html' %}
+
+    {% import 'modules/numerical-data.html' as numerical %}
+    {% import 'modules/barchart.html' as barchart %}
+    {% import 'modules/linechart.html' as linechart %}
+    {% import 'modules/timeline.html' as timeline %}
+    {% import 'modules/report-chart.html' as report_chart%}
+    {% import 'modules/status.html' as status %}
+
+    <div class="main snap-container">
+        <div class="content">
+            <div class="indicators snap-section" id="barcharts"></div>
+            <div class="section-header">
+                <h2>{{ translations.statistics_of }} {{ pan_id | upper }}</h2>
+            </div>
+
+            <div class="grid-12">
+                {{ numerical.render_numerical_module(4, 'availability', translations.average_efficiency, '%', pan_id) }}
+                {{ barchart.render_barchart_module(8, 'availability', translations.barchart_title_availability, '%',
+                100, pan_id) }}
+
+                {{ barchart.render_barchart_module(8, 'time_inactive', translations.barchart_title_inactive_time,
+                'time', 43200, pan_id) }}
+                {{ numerical.render_numerical_module(4, 'time_inactive', translations.average_inactive_time, 'time',
+                pan_id) }}
+
+                {{ numerical.render_numerical_module(4, 'time_ok', translations.average_ok_time, 'time', pan_id) }}
+                {{ barchart.render_barchart_module(8, 'time_ok', translations.barchart_title_ok_time, 'time', 43200,
+                pan_id) }}
+            </div>
+
+            <div class="section-footer"></div>
+
+            <div class="indicators snap-section" id="timelines"></div>
+            <div class="section-header">
+                <h2>{{ translations.statistics_of }} {{ pan_id | upper }}</h2>
+            </div>
+
+            <div class="grid-12">
+                {% for machine in machines %}
+                {{ timeline.render_timeline_module(6, machine, 'tl', pan_id) }}
+                {% endfor %}
+            </div>
+
+            <div class="section-footer"></div>
+
+            <div class="indicators snap-section snap-section" id="report-charts"></div>
+            <div class="section-header">
+                <h2>{{ translations.report_charts_of }} {{ pan_id | upper }}</h2>
+            </div>
+
+            <div class="grid-12 snap-section">
+                {{ report_chart.render_report_chart_module(8, 'hourly', 'production', 'target',
+                translations.chart_title_hourly_production, '', pan_id) }}
+
+                <div class="grid-12 col-span-4">
+                    {{ report_chart.render_report_chart_module(12, 'total', 'production', 'target',
+                    translations.chart_title_total_production, '', pan_id) }}
+                    {{ report_chart.render_report_chart_module(12, 'order', 'production', 'target',
+                    translations.chart_title_order_production, '', pan_id) }}
+                </div>
+            </div>
+
+            <div class="section-footer"></div>
+
+            <div class="indicators snap-section" id="report"></div>
+            <div id="current-report-wrapper">
+                <div class="section-header">
+                    <h2>{{ translations.hourly_report_of }} {{ pan_id | upper }}</h2>
+                    <div class="last-updated-timestamp" id="current-report-timestamp">
+                        {{ translations.last_update }}: --/--/-- --:--
+                    </div>
+                </div>
+                <div id="current-report-section" class="report-viewer-section">
+                    <div id="current-report-container" class="report-container">
+                    </div>
+                </div>
+                <div class="section-footer"></div>
+            </div>
+
+            <div class="indicators snap-section" id="summary"></div>
+            <div class="section-header">
+                <h2>{{ translations.availability_of }} {{ pan_id | upper }}</h2>
+            </div>
+
+            <div class="grid-12">
+                {{ status.render_status_module(12, pan_id) }}
+
+                {{ numerical.render_numerical_module(3, 'availability', translations.availability | lower, '%', pan_id,
+                'summary') }}
+                {{ numerical.render_numerical_module(3, 'prod-efficiency', translations.efficiency, '%', pan_id) }}
+                {{ numerical.render_numerical_module(3, 'quality', translations.quality, '%', pan_id) }}
+                {{ numerical.render_numerical_module(3, 'oee', 'OEE', '%', pan_id) }}
+
+                {{ timeline.render_timeline_module(12, '', 'tl-pan', pan_id) }}
+
+                {{ numerical.render_numerical_module(3, 'target', translations.target, '', pan_id) }}
+                {{ numerical.render_numerical_module(3, 'production', translations.production, '', pan_id) }}
+                {{ numerical.render_numerical_module(3, 'difference', translations.difference, '', pan_id) }}
+                {{ numerical.render_numerical_module(3, 'defects', translations.defects, '', pan_id) }}
+            </div>
+            <div class="section-footer"></div>
+
+            <template id="viewer-row-template">
+                <tr>
+                    <td data-label="{{ translations.hour | upper }}">
+                        <div class="static-info hora"></div>
+                    </td>
+                    <td data-label="{{ translations.target | upper }}">
+                        <div class="static-info meta"></div>
+                    </td>
+                    <td data-label="{{ translations.prod }}">
+                        <div class="static-info prod"></div>
+                    </td>
+                    <td data-label="{{ translations.acum }}">
+                        <div class="static-info acum"></div>
+                    </td>
+                    <td data-label="{{ translations.diff }}">
+                        <div class="static-info dif"></div>
+                    </td>
+                    <td data-label="{{ translations.def }}">
+                        <div class="static-info defect"></div>
+                    </td>
+                    <td data-label="{{ translations.notes_incidents }}">
+                        <div class="static-info notas-incidentes"></div>
+                    </td>
+                </tr>
+            </template>
+
+            <div id="toast" class="toast"></div>
+        </div>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='js/tool-functionality.js') }}"
+        data-loader="dashboard"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auto-scroll.js') }}" defer></script>
+    <script>
+        window.machines = {{ machines | tojson }};
+        window.translations = {{ translations | tojson }};
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,254 @@
+.content, .main {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form {
+    display:inline-grid;
+    background-color: var(--brand-color-light);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    padding: 50px;
+    border-radius: 0.5rem;
+}
+
+.form-title {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: var(--font-in-use);
+    color: white;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1.5rem;
+    width: 6rem;
+}
+
+
+.form label {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-in-use);
+    color: white;
+    margin: 8px 0 4px 1rem;
+    text-align: left;
+}
+
+.form > input, .form .form-select {
+    all: unset;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 16px;
+    font-family: var(--font-in-use);
+    padding: 0 16px;
+    height: 50px;
+    min-width: 200px;
+    width: 100%;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form .form-select {
+    -webkit-appearance: menulist;
+    -moz-appearance: menulist;
+    appearance: menulist;
+
+    padding-top: 12.5px;
+}
+
+.form .form-select option {
+    background-color: var(--primary-color);
+    color: white;
+    font-family: var(--font-in-use);
+    font-size: 0.875rem;
+    transition: background-color 0.3s ease;
+}
+
+.form .form-select option:checked {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.form > input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.form > input:hover, .form .form-select:hover {
+    background-color: var(--secondary-color);
+}
+
+.form > input:focus, .form .form-select:focus {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.input-with-action {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    width: 100%;
+}
+
+.input-with-action input {
+    all: unset;
+    flex-grow: 1;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 16px;
+    font-family: var(--font-in-use);
+    padding: 0 16px;
+    height: 100%;
+    box-sizing: border-box;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1;
+}
+
+.input-with-action input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.input-secondary-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 100%;
+    background-color: var(--primary-color);
+    cursor: pointer;
+    box-sizing: border-box;
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    border-left: 2px solid var(--brand-color-light);
+}
+
+.input-secondary-action .action-icon {
+    width: 24px;
+    height: 24px;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+.input-with-action input:hover {
+    background-color: var(--secondary-color);
+}
+
+.input-with-action input:focus {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.input-secondary-action:hover {
+    background-color: var(--secondary-color);
+}
+
+.input-secondary-action:active {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form > input[type=number]::-webkit-outer-spin-button,
+.form > input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.form > input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.input-with-action input[type=password]::-ms-reveal,
+.input-with-action input[type=password]::-ms-clear { display: none; }
+
+.login-button {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 18px;
+    font-family: var(--font-in-use);
+    padding: 0 16px;
+    height: 50px;
+    min-width: 200px;
+    width: 100%;
+    margin-top: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: var(--secondary-color);
+}
+
+.login-button:active {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.login-button:disabled {
+    cursor: default;
+    background-color: var(--secondary-color);
+    box-shadow: inset 0 0.125rem 0.5rem rgba(0, 0, 0, 0.2);
+    color: var(--primary-color);
+}
+
+.login-button:disabled:hover {
+    background-color: var(--secondary-color);
+}
+
+.back-link {
+    color: white;
+    text-align: center;
+    margin-top: 1rem;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .form {
+        width: 100%;
+        height: 100dvh;
+        border-radius: 0;
+        box-shadow: none;
+
+        display: grid;
+        align-content: center;
+
+        padding: 1.5rem;
+        box-sizing: border-box;
+
+        overflow: scroll;
+    }
+
+    .form#register-form {
+        padding-top: 10rem;
+    }
+
+    .form input, .form button, .form .form-select {
+        width: 100%;
+        max-width: unset;
+    }
+
+    .form label {
+        text-align: center;
+    }
+}

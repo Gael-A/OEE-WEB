@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="{{ lang|default('en') }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 viewport-fit=cover">
+    <title>{{ translations.title_suggestion_mailbox_page }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toolbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-dialog.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/suggestion-box.css') }}">
+    <style>
+        .toolbar-title {
+            margin-left: 90px;
+        }
+
+        @media (max-width: 1540px) {
+            .toolbar-title {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% set nav_items = [] %}
+    {% set show_mode_toggle = True %}
+    {% set toolbar_style = 'nothing' %}
+    {% include 'modules/menus.html' %}
+
+    <div class="main">
+        <div class="content">
+            <div class="section-header">
+                <h2>{{ translations.title_suggestion_mailbox }}</h2>
+            </div>
+            <div class="grid-12">
+                <div class="user-suggestions-container col-span-12">
+                    <div id="all-suggestions-list" class="user-suggestions-list"></div>
+                </div>
+            </div>
+            <div class="section-footer"></div>
+            <div id="toast" class="toast"></div>
+        </div>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='js/tool-functionality.js') }}" data-loader="viewer"
+        role="{{ session.get('role') }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/suggestion-mailbox.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
+    <script>
+        window.translations = {{ translations | tojson }};
+        const sessionTimeout = {{ session_timeout|default (0) }};
+        const logoutUrl = "{{ url_for('auth.logout_user') }}";
+        initSessionTimeout(sessionTimeout, logoutUrl);
+    </script>
+
+</body>
+
+</html>

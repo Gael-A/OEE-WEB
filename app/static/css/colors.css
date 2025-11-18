@@ -1,0 +1,136 @@
+:root {
+    --brand-color: #212852;
+    --brand-color-light: #393d62;
+    --brand-color-dark: #202448;
+
+    --primary-color: #476c9a;
+    --secondary-color: #2f4866;
+    --primary-color-glow: #78a0d1;
+    --secondary-color-glow: #516a88;
+
+    --background-page: #f2f5ff;
+    --background-module: #20293b;
+
+    --main-text-module: #fff;
+    --secondary-text-module: #d2d4d8;
+
+
+    --inactive-background: #f9fc94;
+    --inactive-text: #d7db65;
+
+    --not-schedule-background: #f5bc72;
+    --not-schedule-text: #e79c3b;
+
+    --service-background: #f58c72;
+    --service-text: #e7713b;
+
+    --irrelevant-background: #65db96;
+    --irrelevant-text: #42a76c;
+
+    --lost-signal-background: #3276d6;
+    --lost-signal-text:rgb(255, 255, 255);
+
+    --both-background: #f8cd61;
+    --both-text: #e0af31;
+
+
+    --high-background: #65db96;
+    --high-text: #42a76c;
+
+    --upper-middle-background: #cffc94;
+    --upper-middle-text: #78a742;
+
+    --middle-background: #f9fc94;
+    --middle-text: #a7a542;
+
+    --low-background: #fc9494;
+    --low-text: #db6565;
+
+    
+    --high-inactive-background: #f9fc94;
+    --high-inactive-text: #d7db65;
+
+    --middle-inactive-background: #fcc694;
+    --middle-inactive-text: #db9465;
+
+    --low-inactive-background: #fc9494;
+    --low-inactive-text: #db6565;
+
+
+    --high-ok-background: #65db96;
+    --high-ok-text: #42a76c;
+
+    --middle-ok-background: #65d7db;
+    --middle-ok-text: #42a0a7;
+
+    --low-ok-background: #659cdb;
+    --low-ok-text: #4282a7;
+
+
+    --error-background: #fc9494;
+    --error-text: #db6565;
+
+    --success-background: #94fc9d;
+    --success-text: #65db96;
+
+
+    --submitted-background: #65d7db;
+    --submitted-text: #42a0a7;
+
+    --in_review-background: #f9fc94;
+    --in_review-text: #a7a542;
+    
+    --approved-background: #65db96;
+    --approved-text: #42a76c;
+    
+    --rejected-background: #fc9494;
+    --rejected-text: #db6565;
+    
+    --implemented-background: #659cdb;
+    --implemented-text: #337296;
+
+
+    --submitted-background-hover: #3fbcc0;
+    
+    --in_review-background-hover: #cfd365;
+    
+    --approved-background-hover: #45bb76;
+    
+    --rejected-background-hover: #c55454;
+    
+    --implemented-background-hover: #4880c0;
+
+
+    --submitted-background-alt: #61c5c9;
+    
+    --in_review-background-alt: #e4e778;
+    
+    --approved-background-alt: #5ed891;
+    
+    --rejected-background-alt: #dd6d6d;
+    
+    --implemented-background-alt: #669edd;
+
+
+
+    --white: #fff;
+    --gray: #cfd3d4;
+    --dark-gary: #8d9496;
+
+    
+    /* --- Whiteboard Theme Colors --- */
+    --whiteboard-background: #f8f9fa;
+    --whiteboard-border: #adb5bd;
+    --whiteboard-text-primary: #212529;
+    --whiteboard-text-secondary: #495057;
+    --whiteboard-divider: #dee2e6;
+    --whiteboard-input-border: #ced4da;
+    --whiteboard-focus-blue: #0d6efd;
+    --whiteboard-success-green: #14a728;
+    --whiteboard-warning-yellow: #f0ad4e;
+    --whiteboard-success-green-hover: rgba(20, 167, 40, 0.1);
+    --whiteboard-danger-red: #dd1515;
+    --whiteboard-row-done-background: #f0f1f2;
+    --whiteboard-row-done-mobile-background: #e9ecef;
+    --whiteboard-text-black: #000;
+}

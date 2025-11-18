@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 viewport-fit=cover">
+    <title>{{ translations.title_suggestion_box_page }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toolbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-dialog.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/suggestion-box.css') }}">
+    <style>
+        .snap-container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-padding-top: -90px;
+        }
+
+        .snap-section {
+            scroll-snap-align: start;
+        }
+
+        .grid-12 {
+            min-height: 80dvh;
+        }
+
+        .toolbar-title {
+            margin-left: 90px;
+        }
+
+        @media (max-width: 1540px) {
+            .toolbar-title {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% set nav_items = [
+    { 'id': 'suggestion-form-section', 'icon': 'svg/icon-form.svg', 'alt_text': translations.alt_suggestion_form, 'label': translations.title_suggestion_form },
+    { 'id': 'user-suggestions-section', 'icon': 'svg/icon-result.svg', 'alt_text': translations.alt_user_suggestions, 'label': translations.title_user_suggestions }
+    ] %}
+
+    {% set show_mode_toggle = True %}
+    {% set toolbar_style = 'nothing' %}
+    {% include 'modules/menus.html' %}
+
+    <div class="main snap-container">
+        <div class="content">
+            <div class="indicators snap-section" id="suggestion-form-section"></div>
+            <div class="section-header">
+                <h2>{{ translations.title_suggestion_box }}</h2>
+            </div>
+            <div class="grid-12 snap-section">
+                <div class="suggestion-form-container col-span-12">
+                    <form id="suggestion-form" class="suggestion-form" {% if suggestion_id %}
+                        data-suggestion-id="{{ suggestion_id }}" {% endif %}>
+                        <h2 class="form-title">{{ translations.title_suggestion_form }}</h2>
+
+                        <label for="area">{{ translations.suggestion_area }}</label>
+                        <input type="text" id="area" name="area"
+                            placeholder="{{ translations.suggestion_area_placeholder }}" {% if suggestion_data and suggestion_data['area'] %} value="{{ suggestion_data['area'] }}" {% endif %} required>
+
+                        <label for="problem">{{ translations.suggestion_problem }}</label>
+                        <textarea id="problem" name="problem" rows="4"
+                            placeholder="{{ translations.suggestion_problem_placeholder }}" required>{% if suggestion_data and suggestion_data['problem'] %}{{ suggestion_data['problem'] }}{% endif %}</textarea>
+
+                        <label for="solution">{{ translations.suggestion_solution }}</label>
+                        <textarea id="solution" name="solution" rows="4"
+                            placeholder="{{ translations.suggestion_solution_placeholder }}">{% if suggestion_data and suggestion_data['solution'] %}{{ suggestion_data['solution'] }}{% endif %}</textarea>
+
+                        <label for="benefit">{{ translations.suggestion_benefit }}</label>
+                        <textarea id="benefit" name="benefit" rows="4"
+                            placeholder="{{ translations.suggestion_benefit_placeholder }}">{% if suggestion_data and suggestion_data['benefit'] %}{{ suggestion_data['benefit'] }}{% endif %}</textarea>
+
+                        <button type="submit" class="submit-button">{% if suggestion_id %} {{ translations.suggestion_edit_button }} {% else %} {{ translations.suggestion_submit_button }} {% endif %}</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="indicators snap-section" id="user-suggestions-section"></div>
+            <div class="section-header">
+                <h2>{{ translations.title_user_suggestions }}</h2>
+            </div>
+            <div class="grid-12 snap-section">
+                <div class="user-suggestions-container col-span-12">
+                    <div id="user-suggestions-list" class="user-suggestions-list"></div>
+                </div>
+            </div>
+
+            <div class="section-footer"></div>
+            <div id="toast" class="toast"></div>
+        </div>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='js/tool-functionality.js') }}" data-loader="viewer"
+        role="{{ session.get('role') }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/suggestion-box-attempt.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/user-suggestions.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
+    <script>
+        window.translations = {{ translations | tojson }};
+
+        const sessionTimeout = {{ session_timeout|default (0) }};
+        const logoutUrl = "{{ url_for('auth.logout_user') }}";
+        initSessionTimeout(sessionTimeout, logoutUrl);
+    </script>
+
+</body>
+
+</html>

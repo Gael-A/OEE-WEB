@@ -1,0 +1,14 @@
+{% macro render_numerical_module(span, attribute, label, unit = '', pan='CELULA_1', section = '' , shift='1', date='1111-11-11') %}
+<div class="module number-data col-span-{{ span }}" id="number-data-{{ pan }}-{{ attribute }}-{{ section }}" >
+    <div class="nm-numerical" id="numerical-value-{{ pan }}-{{ attribute }}-{{ section }}">
+        ...
+    </div>
+    <div class="nm-label">
+        {{ label }}
+    </div>
+</div>
+
+<script>
+    window.renderNumericalModule('{{ pan }}', '{{ shift }}', '{{ date }}', '{{ attribute }}', '{{ unit }}')
+</script>
+{% endmacro %}

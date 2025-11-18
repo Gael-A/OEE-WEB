@@ -1,0 +1,27 @@
+.number-data {
+    min-height: 200px;
+}
+
+.number-data .nm-numerical {
+    font-size: 3rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.number-data .nm-label {
+    font-size: 1rem;
+    color: var(--secondary-text-module);
+    margin-top: 0.5rem;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+    .number-data .nm-numerical {
+        font-size: 2.5rem;
+    }
+
+    .number-data .nm-label {
+        font-size: 0.9rem;
+    }
+}

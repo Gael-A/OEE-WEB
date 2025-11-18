@@ -1,0 +1,358 @@
+<style>
+    .bot-container {
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        position: fixed;
+        bottom: 10px;
+        right: 20px;
+        background-color: var(--white);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: width 0.3s ease-in-out, height 0.3s ease-in-out, border-radius 0.3s ease-in-out;
+        overflow: hidden;
+        z-index: 9999;
+    }
+
+    .bot-container.expanded {
+        width: 350px;
+        height: calc(100dvh - 300px);
+        border-radius: 15px;
+    }
+
+    .icon-bot {
+        padding: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50px;
+        height: 50px;
+        z-index: 10;
+    }
+
+    .icon-bot.close {
+        padding: 15px;
+    }
+
+    .bot-chat {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .chat-header {
+        background-color: var(--brand-color);
+        color: var(--main-text-module);
+        padding: 15px;
+        font-weight: bold;
+        flex-shrink: 0;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+    }
+
+    .chat-body {
+        flex-grow: 1;
+        padding: 15px;
+        overflow-y: auto;
+        background-color: var(--background-page);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Custom Scrollbar for Chat Body */
+    .chat-body::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .chat-body::-webkit-scrollbar-track {
+        background: var(--background-page);
+    }
+
+    .chat-body::-webkit-scrollbar-thumb {
+        background-color: var(--brand-color-light);
+        border-radius: 10px;
+    }
+
+    .message-container {
+        display: flex;
+        width: 100%;
+    }
+
+    .user-message-container {
+        justify-content: flex-end;
+    }
+
+    .message {
+        padding: 8px 12px;
+        border-radius: 18px;
+        max-width: 75%;
+        word-wrap: break-word;
+        line-height: 1.4;
+    }
+
+    .bot-message {
+        background-color: var(--whiteboard-row-done-background);
+        color: var(--whiteboard-text-primary);
+        border-bottom-left-radius: 4px;
+    }
+
+    .user-message {
+        background-color: var(--brand-color-light);
+        color: var(--main-text-module);
+        border-bottom-right-radius: 4px;
+    }
+
+    .chat-footer {
+        padding: 10px 15px;
+        background-color: var(--whiteboard-background);
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .chat-input {
+        flex-grow: 1;
+        border: 1px solid var(--whiteboard-input-border);
+        border-radius: 20px;
+        padding: 8px 15px;
+        outline: none;
+        font-size: 14px;
+    }
+
+    .chat-input:focus {
+        border-color: var(--primary-color);
+    }
+
+    .send-button {
+        background-color: var(--brand-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        border: none;
+        flex-shrink: 0;
+        transition: background-color 0.2s ease;
+    }
+
+    .send-button:hover {
+        background-color: var(--brand-color-light);
+    }
+
+    .send-button img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .loading-dots span {
+        animation: blink 1.4s infinite both;
+        font-size: 1.5em;
+        line-height: 0.5;
+    }
+
+    .loading-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .loading-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes blink {
+        0% {
+            opacity: 0.2;
+        }
+
+        20% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0.2;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .bot-container.expanded {
+            right: 0;
+            bottom: 0;
+            margin: 0;
+
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+        }
+
+        .chat-header {
+            border-radius: 0;
+        }
+    }
+</style>
+
+<div class="bot-container">
+    <div class="icon-bot">
+        <img src="{{ url_for('static', filename='svg/action-bot.svg') }}" alt="Bot Icon">
+    </div>
+    <div class="bot-chat hidden">
+        <div class="chat-header">
+            ILChat
+        </div>
+        <div class="chat-body">
+            <div class="message-container">
+                <div class="message bot-message">
+                    ¡Hola! ¿En qué puedo ayudarte hoy?
+                </div>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
+            <button class="send-button" title="Enviar mensaje">
+                <img src="{{ url_for('static', filename='svg/action-send.svg') }}" alt="Send">
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const botContainer = document.querySelector('.bot-container');
+
+        if (!botContainer) return;
+
+        const iconContainer = botContainer.querySelector('.icon-bot');
+        const botIconImg = iconContainer.querySelector('img');
+        const botChat = botContainer.querySelector('.bot-chat');
+
+        if (iconContainer && botIconImg && botChat) {
+            const botIconSrc = "{{ url_for('static', filename='svg/action-bot.svg') }}";
+            const closeIconSrc = "{{ url_for('static', filename='svg/action-close.svg') }}";
+
+            iconContainer.addEventListener('click', () => {
+                botContainer.classList.toggle('expanded');
+                botChat.classList.toggle('hidden');
+                if (botContainer.classList.contains('expanded')) {
+                    botIconImg.src = closeIconSrc;
+                    botIconImg.alt = "Close Chat";
+                    iconContainer.classList.add('close');
+                } else {
+                    botIconImg.src = botIconSrc;
+                    botIconImg.alt = "Bot Icon";
+                    iconContainer.classList.remove('close');
+                }
+            });
+        }
+
+        const chatBody = botContainer.querySelector('.chat-body');
+        const chatInput = botContainer.querySelector('.chat-input');
+        const sendButton = botContainer.querySelector('.send-button');
+
+        const appendMessage = (text, sender) => {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container');
+
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+
+            if (sender === 'user') {
+                messageContainer.classList.add('user-message-container');
+                messageDiv.classList.add('user-message');
+                messageDiv.textContent = text;
+            } else {
+                messageDiv.classList.add('bot-message');
+                if (sender === 'loading') {
+                    messageDiv.innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>';
+                } else {
+                    messageDiv.textContent = text;
+                }
+            }
+
+            messageContainer.appendChild(messageDiv);
+            chatBody.appendChild(messageContainer);
+            chatBody.scrollTop = chatBody.scrollHeight;
+            return messageContainer;
+        };
+
+        const handleSendMessage = async () => {
+            const prompt = chatInput.value.trim();
+            if (!prompt) return;
+
+            appendMessage(prompt, 'user');
+            chatInput.value = '';
+            const loadingMessage = appendMessage('', 'loading');
+
+            botContainer.style.display = 'none';
+            const domContext = document.documentElement.outerHTML;
+            botContainer.style.display = '';
+
+            const panInput = document.getElementById('pan');
+            const shiftInput = document.getElementById('shift');
+            const dateInput = document.getElementById('date');
+
+            const panValue = panInput ? panInput.value : null;
+            const shiftValue = shiftInput ? shiftInput.value : null;
+            const dateValue = dateInput ? dateInput.value : null;
+
+            const payload = {
+                prompt: prompt,
+                dom_context: domContext,
+                pan: panValue,
+                shift: shiftValue,
+                date: dateValue
+            };
+
+            try {
+                const response = await fetch('/api/chatbot/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                chatBody.removeChild(loadingMessage);
+
+                const data = await response.json();
+                if (!response.ok) {
+                    appendMessage(`Error: ${data.error || 'No se pudo obtener respuesta.'}`, 'bot');
+                    return;
+                }
+                appendMessage(data.response, 'bot');
+            } catch (error) {
+                chatBody.removeChild(loadingMessage);
+                console.error('Chatbot fetch error:', error);
+                appendMessage('Lo siento, no puedo conectarme con el asistente en este momento.', 'bot');
+            }
+        };
+
+        sendButton.addEventListener('click', handleSendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSendMessage();
+            }
+        });
+
+        const resetChatOnPageLoad = async () => {
+            try {
+                await fetch('/api/chatbot/reset', { method: 'POST' });
+            } catch (error) {
+                console.error('Fallo al reiniciar el chat en la carga de la página:', error);
+            }
+        };
+
+        resetChatOnPageLoad();
+    });
+</script>

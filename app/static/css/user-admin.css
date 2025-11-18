@@ -1,0 +1,268 @@
+.admin-panel {
+    background-color: var(--whiteboard-background);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; 
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--whiteboard-text-primary);
+    font-size: 0.9rem;
+    table-layout: fixed;
+}
+
+.admin-table thead tr {
+    background-color: var(--brand-color-light);
+    color: var(--main-text-module);
+    text-align: left;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px 15px;
+    border: 1px solid var(--whiteboard-divider);
+    vertical-align: middle;
+    word-wrap: break-word;
+}
+
+.admin-table th:nth-child(1),
+.admin-table td:nth-child(1) {
+    width: 15%;
+}
+
+.admin-table th:nth-child(5),
+.admin-table td:nth-child(5) {
+    width: 15%;
+}
+
+.admin-table th:nth-child(6),
+.admin-table td:nth-child(6) {
+    width: 10%;
+}
+
+.admin-table th {
+    font-weight: 600;
+}
+
+.admin-table th.sortable {
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+.admin-table th.sortable:hover {
+    background-color: var(--brand-color);
+}
+
+.admin-table th.sortable::after {
+    content: ' \2195';
+    opacity: 0.4;
+    position: absolute;
+    right: 10px;
+}
+
+.admin-table th.sortable.sort-asc::after {
+    content: ' \2191';
+    color: white;
+    opacity: 1;
+}
+
+.admin-table th.sortable.sort-desc::after {
+    content: ' \2193';
+    color: white;
+    opacity: 1;
+}
+
+.admin-table tbody tr {
+    border-bottom: 1px solid var(--whiteboard-divider);
+}
+
+.admin-table tbody tr:nth-of-type(even) {
+    background-color: var(--whiteboard-row-done-mobile-background);
+}
+
+.admin-table tbody tr:last-of-type {
+    border-bottom: 2px solid var(--brand-color);
+}
+
+.admin-table tbody tr:hover {
+    background-color: var(--primary-color-glow);
+    color: var(--main-text-module);
+}
+
+.admin-table tbody tr:hover .role-select {
+    background-color: var(--background-page);
+    color: var(--whiteboard-text-black);
+    border-color: var(--brand-color);
+}
+
+.role-select {
+    width: 100%;
+    padding: 4px 12px;
+    border: 1px solid var(--whiteboard-input-border);
+    border-radius: 4px;
+    background-color: #fff;
+    color: var(--whiteboard-text-primary);
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.role-select:focus {
+    outline: none;
+    border-color: var(--whiteboard-focus-blue);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.admin-table td.actions-cell {
+    text-align: center;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.action-btn img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* Nuevo CSS para dar estilo a los inputs */
+.admin-table input,
+.admin-table select {
+    width: 100%;
+    padding: 6px 12px;
+    border: 1px solid var(--whiteboard-divider);
+    border-radius: 4px;
+    background-color: var(--whiteboard-background);
+    color: var(--whiteboard-text-primary);
+    box-sizing: border-box; /* Asegura que el padding no cambie el ancho */
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-table input:focus,
+.admin-table select:focus {
+    outline: none;
+    border-color: var(--whiteboard-focus-blue);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.admin-table input::placeholder {
+    color: var(--whiteboard-text-secondary);
+    opacity: 0.8;
+}
+
+/* Ajustes para la fila de agregar usuario */
+#add-user-row td {
+    border-top: 2px solid var(--brand-color);
+}
+#add-user-row:hover {
+    background-color: var(--whiteboard-background); /* Evita el hover azul en la fila de agregar */
+}
+
+@media screen and (max-width: 768px) {
+    .admin-panel {
+        padding: 1rem 0;
+        border: none;
+        box-shadow: none;
+        background-color: transparent;
+    }
+
+    .admin-table {
+        border: 0;
+        table-layout: auto;
+    }
+
+    .admin-table thead {
+        display: none;
+    }
+
+    .admin-table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid var(--whiteboard-divider);
+        border-radius: 8px;
+        background-color: var(--whiteboard-background);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        color: var(--whiteboard-text-primary);
+        padding: 0.5rem 1rem;
+    }
+
+    .admin-table tbody tr:nth-of-type(even) {
+        background-color: var(--whiteboard-background);
+    }
+
+    .admin-table tbody tr:hover {
+        border-color: var(--whiteboard-focus-blue);
+        background-color: var(--whiteboard-background);
+        color: var(--whiteboard-text-primary);
+    }
+    
+    .admin-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 12px 0;
+        text-align: right;
+        position: relative;
+        border: none;
+        border-bottom: 1px solid var(--whiteboard-row-done-mobile-background);
+    }
+
+    .admin-table td:last-child {
+        border-bottom: 0;
+        padding-top: 1rem;
+    }
+
+    .admin-table th:nth-child(1), .admin-table td:nth-child(1),
+    .admin-table th:nth-child(5), .admin-table td:nth-child(5),
+    .admin-table th:nth-child(6), .admin-table td:nth-child(6) {
+        width: auto;
+    }
+
+    .admin-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--whiteboard-text-secondary);
+        text-align: left;
+        padding-right: 10px;
+    }
+
+    .admin-table td:nth-of-type(1)::before { content: "ID Usuario:"; }
+    .admin-table td:nth-of-type(2)::before { content: "Nombre:"; }
+    .admin-table td:nth-of-type(3)::before { content: "Apellido:"; }
+    .admin-table td:nth-of-type(4)::before { content: "Correo:"; }
+    .admin-table td:nth-of-type(5)::before { content: "Rol:"; }
+    .admin-table td:nth-of-type(6)::before { content: "Acciones:"; }
+
+    .role-select {
+        width: auto;
+        max-width: 160px;
+        background-color: #fff;
+        color: var(--whiteboard-text-primary);
+        border-color: var(--whiteboard-input-border);
+    }
+
+    .admin-table tbody tr:hover .role-select {
+        border-color: var(--whiteboard-focus-blue);
+    }
+
+    .admin-table td.actions-cell {
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .admin-table td.actions-cell::before {
+        flex-grow: 1;
+    }
+}

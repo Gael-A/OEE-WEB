@@ -1,0 +1,9 @@
+{% macro render_status_module(span, pan='CELULA_1', shift='1', date='1111-11-11') %}
+<div class="module status col-span-{{ span }}" id="status-{{ pan }}" style="font-size: xxx-large;">
+        ...
+</div>
+
+<script>
+    window.renderStatusModule('{{ pan }}', '{{ shift }}', '{{ date }}')
+</script>
+{% endmacro %}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="{{ lang|default('en') }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ translations.title_production_report }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toolbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/machine.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/clock.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table-whiteboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-dialog.css') }}">
+</head>
+
+<body>
+
+    {% set nav_items = [
+    { 'id': 'header', 'icon': 'svg/icon-info.svg', 'alt_text': translations.alt_header, 'label':
+    translations.nav_header},
+    { 'id': 'body', 'icon': 'svg/icon-hour-per-hour.svg', 'alt_text': translations.alt_hourly_report, 'label':
+    translations.hourly_report },
+    { 'id': 'machines', 'icon': 'svg/icon-machine.svg', 'alt_text': translations.alt_operating_machines, 'label':
+    translations.operating_machines }
+    ] %}
+
+    {% set show_mode_toggle = session.get('role') == 'admin' and false %}
+
+    {% include 'modules/menus.html' %}
+
+    {% if session.get('role') == 'admin' %}
+    {% include 'modules/chatbot.html' %}
+    {% endif %}
+
+    {% import 'modules/machine.html' as machines_module %}
+
+    <div class="main snap-container">
+        <div class="content">
+
+            <div class="indicators snap-section" id="header"></div>
+            <div class="section-header">
+                <h2>{{ translations.report_header_title }}</h2>
+            </div>
+            <div class="header-report">
+                <table class="header-report-table">
+                    <thead>
+                        <tr>
+                            <th>{{ translations.part_number }}</th>
+                            <th>{{ translations.order }}</th>
+                            <th>{{ translations.quantity }}</th>
+                            <th>{{ translations.operator_count }}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="{{ translations.part_number }}"><input type="number" id="no_parte" list="part_nos"></td>
+                            <td data-label="{{ translations.order }}"><input type="text" id="orden"></td>
+                            <td data-label="{{ translations.quantity }}"><input type="number" id="cantidad" min="0">
+                            </td>
+                            <td data-label="{{ translations.operator_count }}"><input type="number" id="no_op" min="0">
+                            </td>
+                            <td data-label="">
+                                <div class="action-button" id="header-check-button"
+                                    title="{{ translations.report_confirm_header_changes }}"><img
+                                        src="{{ url_for('static', filename='svg/action-check.svg') }}"
+                                        alt="{{ translations.alt_confirm }}"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <datalist id="part_nos">
+                        {% for p in part_nos %}
+                            <option value="{{ p }}">
+                        {% endfor %}
+                    </datalist>
+                </table>
+            </div>
+            <div class="section-footer"></div>
+
+            <div class="indicators snap-section" id="body"></div>
+            <div class="section-header">
+                <h2>{{ translations.hourly_report }}</h2>
+            </div>
+            <div class="body-report">
+                <table class="body-report-table">
+                    <thead>
+                        <tr>
+                            <th>{{ translations.hour | upper }}</th>
+                            <th>{{ translations.target | upper }}</th>
+                            <th>{{ translations.prod | upper }}</th>
+                            <th>{{ translations.accum | upper }}</th>
+                            <th>{{ translations.diff | upper }}</th>
+                            <th>{{ translations.defect | upper }}</th>
+                            <th>{{ translations.notes_incidents | upper }}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-body">
+
+                    </tbody>
+                </table>
+                <template id="report-row-template">
+                    <tr>
+                        <td data-label="{{ translations.hour | upper }}">
+                            <div class="static-info hora">00:00 - 00:00</div>
+                        </td>
+                        <td data-label="{{ translations.target | upper }}">
+                            <div class="static-info meta"></div>
+                        </td>
+                        <td data-label="{{ translations.prod | upper }}">
+                            <input type="number" class="prod" min="0">
+                        </td>
+                        <td data-label="{{ translations.accum | upper }}">
+                            <div class="static-info acum">0</div>
+                        </td>
+                        <td data-label="{{ translations.diff | upper }}">
+                            <div class="static-info dif">0</div>
+                        </td>
+                        <td data-label="{{ translations.defect | upper }}">
+                            <input type="number" class="defect" min="0">
+                        </td>
+                        <td data-label="{{ translations.notes_incidents | upper }}">
+                            <input type="text" class="notas-incidentes" list="incident-suggestions">
+                        </td>
+                        <td data-label="">
+                            <div class="action-button" title="{{ translations.report_save_row_title }}">
+                                <img src="{{ url_for('static', filename='svg/action-check.svg') }}"
+                                    alt="{{ translations.alt_save }}">
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <datalist id="incident-suggestions">
+                    {% for s in suggestions %}
+                        <option value="{{ s.suggestion }}">
+                    {% endfor %}
+                </datalist>
+            </div>
+            <div class="report-actions-container">
+                <button id="close-report-button" class="report-action-button hidden">{{ translations.report_close_report }}</button>
+            </div>
+            <div class="section-footer"></div>
+
+            <div class="indicators snap-section" id="machines"></div>
+            <div class="section-header">
+                <h2>{{ translations.operating_machines }}</h2>
+            </div>
+            <div class="machine-container">
+                {% for machine in machines %}
+                {{ machines_module.render_machine_module(machine) }}
+                {% endfor %}
+            </div>
+            <div class="machine-actions-container hidden" id="machine-actions-container">
+                <button id="cancel-changes-button" class="report-action-button cancel-action">{{
+                    translations.report_cancel_changes_button }}</button>
+                <button id="apply-changes-button" class="report-action-button">{{ translations.report_apply_changes_button }}</button>
+            </div>
+            <div class="section-footer"></div>
+
+        </div>
+    </div>
+    
+    <script type="module" src="{{ url_for('static', filename='js/tool-functionality.js') }}" data-loader="report" data-user-role="{{ session.get('role', 'user') }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/machines.js') }}" data-interactive="true"></script>
+    <script src="{{ url_for('static', filename='js/input-validation.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
+    <script>
+        window.machines = {{ machines | tojson }};
+        window.translations = {{ translations | tojson }};
+        window.part_nos = {{ part_nos | tojson }};
+
+        const sessionTimeout = {{ session_timeout|default(0) }};
+        const logoutUrl = "{{ url_for('auth.logout_user') }}";
+        initSessionTimeout(sessionTimeout, logoutUrl);
+    </script>
+</body>
+
+</html>

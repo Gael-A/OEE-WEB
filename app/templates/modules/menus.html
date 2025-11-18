@@ -1,0 +1,119 @@
+{% from 'modules/_sidebar_macros.html' import render_sidebars with context %}
+
+<div class="toolbar">
+    {% if toolbar_style == 'search' %}
+    <h1 class="toolbar-title" style="margin-left: 10%;">{{ translations.toolbar_title }}</h1>
+    <div class="actions-container search-actions-container" id="actions-container">
+        <div class="action-group search-action-group">
+            <h6 class="action-label">{{ translations.toolbar_search }}</h6>
+            <div class="input-with-action search-action">
+                <input type="text" id="search-input" placeholder="{{ translations.toolbar_search_placeholder }}">
+                <button type="button" class="input-secondary-action" id="search-button">
+                    <img class="action-icon" src="{{ url_for('static', filename='svg/action-search.svg') }}"
+                        alt="{{ translations.alt_search }}">
+                </button>
+            </div>
+        </div>
+        {% elif toolbar_style == 'nothing' %}
+        <h1 class="toolbar-title" style="width: 100%; text-align: center;">{{ translations.toolbar_title }}</h1>
+        <div class="actions-container" id="actions-container" style="display: none;"></div>
+        {% else %}
+        <div class="clock-container disabled">
+            <div class="clock" id="clock">00:00:00</div>
+        </div>
+        <h1 class="toolbar-title">{{ translations.toolbar_title }}</h1>
+        <div class="actions-container" id="actions-container">
+            <div class="action-group {% if not show_mode_toggle %}hidden{% endif %} mode-action-button">
+                <h6 class="action-label">{{ translations.toolbar_mode }}</h6>
+                <div class="action">
+                    <div class="icon-container sub-action" id="mode-toggle" mode="current">
+                        <img class="action-icon" src="{{ url_for('static', filename='svg/action-current.svg') }}"
+                            alt="{{ translations.alt_mode_toggle }}">
+                    </div>
+                    <div class="division-vertical"></div>
+                    <div class="info-label sub-action disabled" id="mode-action" mode="current">
+                        {{ translations.toolbar_mode_current }}</div>
+                </div>
+            </div>
+
+            <div class="action-group">
+                <h6 class="action-label" style="width: 250px;">{{ translations.toolbar_production_area }}</h6>
+                <div class="action dropdown-action" id="pan-dropdown">
+                    <div class="info-label" id="pan-label">{{ translations.toolbar_select }}</div>
+                    <div class="division-vertical"></div>
+                    <div class="icon-container">
+                        <img class="action-icon" src="{{ url_for('static', filename='svg/action-dropdown.svg') }}"
+                            alt="{{ translations.alt_dropdown }}">
+                    </div>
+                </div>
+                <div class="dropdown-menu hidden" id="pan-dropdown-menu"></div>
+            </div>
+
+            <div class="action-group">
+                <h6 class="action-label" style="width: 250px;">{{ translations.toolbar_shift }}</h6>
+                <div class="action dropdown-action disabled" id="shift-dropdown">
+                    <div class="info-label" id="shift-label">{{ translations.toolbar_select }}</div>
+                    <div class="division-vertical"></div>
+                    <div class="icon-container" id="shift-number">-</div>
+                </div>
+                <div class="dropdown-menu hidden" id="shift-dropdown-menu"></div>
+            </div>
+
+            <div class="action-group">
+                <h6 class="action-label">{{ translations.toolbar_select_day }}</h6>
+                <div class="action dropdown-action disabled" id="date-dropdown">
+                    <div class="info-label" id="date-label"><input type="text" name="date" value="6-30-2025"></div>
+                    <div class="division-vertical"></div>
+                    <div class="icon-container">
+                        <img class="action-icon" src="{{ url_for('static', filename='svg/action-calendar.svg') }}"
+                            alt="{{ translations.alt_calendar }}">
+                    </div>
+                </div>
+                <div class="dropdown-menu hidden" id="date-picker-menu">
+                    <div id="custom-datepicker"></div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {{ render_sidebars(nav_items) }}
+
+    <div class="sidebar-toggle right drop-shadow-lg">
+        <img class="sidebar-toggle-icon right" src="{{ url_for('static', filename='svg/circle_right.svg') }}"
+            alt="{{ translations.alt_sidebar_toggle }}">
+    </div>
+
+    <form class="hidden">
+        <select name="pan" id="pan">
+        </select>
+        <select name="shift" id="shift">
+            <option value="all" selected>{{ translations.shift_all }}</option>
+            <option value="1">06:30 - 16:00</option>
+            <option value="2">16:20 - 00:20</option>
+            <option value="3">00:40 - 06:00</option>
+        </select>
+        <input type="date" name="date" id="date">
+    </form>
+
+    <script>
+        function relocateActionsIfMobile() {
+            const isMobile = window.innerWidth < 768;
+            const actionsContainer = document.getElementById("actions-container");
+            const mobileTarget = document.getElementById("mobile-actions-container");
+            const toolbar = document.querySelector(".toolbar");
+
+            if (isMobile && toolbar.contains(actionsContainer)) {
+                mobileTarget.appendChild(actionsContainer);
+                mobileTarget.classList.remove("hidden");
+                actionsContainer.classList.add("mobile-mode");
+            } else if (!isMobile && mobileTarget.contains(actionsContainer)) {
+                toolbar.appendChild(actionsContainer);
+                mobileTarget.classList.add("hidden");
+                actionsContainer.classList.remove("mobile-mode");
+            }
+        }
+
+        window.addEventListener("load", relocateActionsIfMobile);
+        window.addEventListener("resize", relocateActionsIfMobile);
+    </script>

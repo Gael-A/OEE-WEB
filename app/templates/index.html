@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Índice de Navegación</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #0d6efd;
+            margin-bottom: 1.5rem;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 1rem 0;
+        }
+        a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #0d6efd;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            width: 250px;
+            transition: background-color 0.2s ease-in-out;
+        }
+        a:hover {
+            background-color: #0b5ed7;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                background: none;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Índice de Navegación (Debug)</h1>
+        <ul>
+            <li><a href="{{ url_for('main.dashboard') }}">Dashboard Principal</a></li>
+            <li><a href="{{ url_for('main.daily_production_report') }}">Crear Reporte Diario</a></li>
+            {% if session.get('role') == 'admin' %}
+            <li><a href="{{ url_for('main.viewer_daily_production_report') }}">Ver Reportes Diarios</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('auth.logout_user') }}">Cerrar Sesión</a></li>
+        </ul>
+    </div>
+</body>
+</html>

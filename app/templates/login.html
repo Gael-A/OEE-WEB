@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ translations.title_login_page }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+</head>
+
+<body>
+
+    <div class="main">
+        <div class="content">
+            <form id="login-form" class="form">
+                <img src="{{ url_for('static', filename='img/ilc_logo_light.png') }}" alt="ILC Logo" class="form-logo">
+                <h2 class="form-title">{{ translations.login_title }}</h2>
+                <label for="id">{{ translations.register_clock_number }}</label>
+                <input type="number" name="id" id="id"
+                    placeholder="{{ translations.register_clock_number_placeholder }}" required>
+                <label for="password">{{ translations.register_password }}</label>
+                <div class="input-with-action">
+                    <input type="password" name="password" id="password"
+                        placeholder="{{ translations.register_password_placeholder }}" required>
+                    <div id="toggle-password" class="input-secondary-action"
+                        title="{{ translations.register_toggle_password_visibility }}">
+                        <img id="password-icon" src="{{ url_for('static', filename='svg/action-eye-slash.svg') }}"
+                            alt="Toggle visibility" class="action-icon">
+                    </div>
+                </div>
+                <button type="submit" class="login-button">{{ translations.login_button }}</button>
+                <a href="{{ url_for('main.register') }}" class="back-link">{{ translations.login_no_account }}</a>
+                <a href="/" class="back-link">{{ translations.login_continue_without_signin }}</a>
+            </form>
+            <div id="toast" class="toast"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/login-attempt.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form-validation.js') }}"></script>
+    <script>
+        window.translations = {{ translations | tojson }};
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 viewport-fit=cover">
+    <title>{{ translations.title_user_profile_page }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toolbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-dialog.css') }}">
+
+    <style>
+        .indicators {
+            margin-bottom: 0;
+        }
+
+        .toolbar-title {
+            margin-left: 90px;
+        }
+
+        @media (max-width: 1540px) {
+            .toolbar-title {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% set nav_items = [
+        { 'id': 'profile-info', 'icon': 'svg/icon-user-id.svg', 'alt_text': translations.alt_profile_info, 'label': translations.nav_profile_info },
+        { 'id': 'edit-profile', 'icon': 'svg/icon-user-edit.svg', 'alt_text': translations.alt_edit_profile, 'label': translations.nav_edit_profile }
+    ] %}
+    {% set show_mode_toggle = True %}
+    {% set toolbar_style = 'nothing' %}
+    {% include 'modules/menus.html' %}
+
+    <div class="main">
+        <div class="content">
+            <div class="profile-container">
+                <div class="indicators" id="profile-info"></div>
+                <div class="profile-header">
+                    <h1 class="profile-name">{{ session.full_name }}<span class="profile-id">#{{ session.id }}</span></h1>
+                    <p class="profile-role">{{ translations['user_role_' + session.role] or session.role | title }}</p>
+                </div>
+
+                <div class="indicators" id="edit-profile"></div>
+                <form id="profile-form" class="form">
+                    <h2 class="form-title">{{ translations.profile_edit_title }}</h2>
+    
+                    <label for="first_name">{{ translations.register_first_name }}</label>
+                    <input type="text" name="first_name" id="first_name" value="{{ session.first_name }}" required>
+                    
+                    <label for="last_name">{{ translations.register_last_name }}</label>
+                    <input type="text" name="last_name" id="last_name" value="{{ session.last_name }}" required>
+                    
+                    <label for="email">{{ translations.register_email }}</label>
+                    <input type="email" name="email" id="email" value="{{ session.email }}" required>
+                    
+                    <label for="language">{{ translations.register_language }}</label>
+                    <select name="language" id="language" required class="form-select">
+                        <option value="es" {% if session.language == 'es' %}selected{% endif %}>{{ translations.register_language_es }}</option>
+                        <option value="en" {% if session.language == 'en' %}selected{% endif %}>{{ translations.register_language_en }}</option>
+                        <option value="pl" {% if session.language == 'pl' %}selected{% endif %}>{{ translations.register_language_pl }}</option>
+                    </select>
+                    
+                    <button type="submit" class="login-button">{{ translations.profile_save_button }}</button>
+                    <a href="{{ url_for('main.change_password_page') }}" id="change-password-btn" class="back-link">{{ translations.profile_change_password_button }}</a>
+                </form>
+            </div>
+            <div id="toast" class="toast"></div>
+        </div>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='js/tool-functionality.js') }}" data-loader="viewer" role="{{ session.get('role') }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/profile-update.js') }}"></script>
+    <script>
+        window.translations = {{ translations | tojson }};
+        
+        const sessionTimeout = {{ session_timeout|default (0) }};
+        const logoutUrl = "{{ url_for('auth.logout_user') }}";
+        initSessionTimeout(sessionTimeout, logoutUrl);
+    </script>
+</body>
+</html>

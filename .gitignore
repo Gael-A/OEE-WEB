@@ -1,0 +1,35 @@
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+*.o
+*.pyc
+*.pyd
+*.pyo
+
+# IDE-specific files
+.idea/
+.vscode/
+*.swp
+*.bak
+*.swo
+
+# Python-specific files
+venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+
+# Jupyter Notebook-specific files
+.ipynb_checkpoints/
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+
+# Specific files
+debug-things.py
+map.py
+mapa_proyecto.txt
+notas.txt

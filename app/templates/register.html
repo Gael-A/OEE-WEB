@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="{{ lang|default('en') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ translations.title_register }}</title>    
+    <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+</head>
+<body>
+
+    <div class="main">
+        <div class="content">
+            <form id="register-form" class="form">
+                <img src="{{ url_for('static', filename='img/ilc_logo_light.png') }}" alt="ILC Logo" class="form-logo">
+                <h2 class="form-title">{{ translations.register_create_account }}</h2>
+                
+                <label for="id">{{ translations.register_clock_number }}</label>
+                <input type="number" name="id" id="id" placeholder="{{ translations.register_clock_number_placeholder }}" required>
+                
+                <label for="first_name">{{ translations.register_first_name }}</label>
+                <input type="text" name="first_name" id="first_name" placeholder="{{ translations.register_first_name_placeholder }}" required>
+                
+                <label for="last_name">{{ translations.register_last_name }}</label>
+                <input type="text" name="last_name" id="last_name" placeholder="{{ translations.register_last_name_placeholder }}" required>
+                
+                <label for="email">{{ translations.register_email }}</label>
+                <input type="email" name="email" id="email" placeholder="{{ translations.register_email_placeholder }}" required>
+                
+                <label for="language">{{ translations.register_language }}</label>
+                <select name="language" id="language" required class="form-select" >
+                    <option value="es">{{ translations.register_language_es }}</option>
+                    <option value="en" selected>{{ translations.register_language_en }}</option>
+                    <option value="pl">{{ translations.register_language_pl }}</option>
+                </select>
+                
+                <label for="password">{{ translations.register_password }}</label>
+                <div class="input-with-action">
+                    <input type="password" name="password" id="password" placeholder="{{ translations.register_password_placeholder }}" required>
+                    <div id="toggle-password" class="input-secondary-action" title="{{ translations.register_toggle_password_visibility }}">
+                        <img id="password-icon" src="{{ url_for('static', filename='svg/action-eye-slash.svg') }}" alt="Toggle visibility" class="action-icon">
+                    </div>
+                </div>
+                
+                <label for="confirm_password">{{ translations.register_confirm_password }}</label>
+                <div class="input-with-action">
+                    <input type="password" name="confirm_password" id="confirm_password" placeholder="{{ translations.register_password_placeholder }}" required>
+                    <div id="toggle-confirm-password" class="input-secondary-action" title="{{ translations.register_toggle_password_visibility }}">
+                        <img id="confirm-password-icon" src="{{ url_for('static', filename='svg/action-eye-slash.svg') }}" alt="Toggle visibility" class="action-icon">
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-button">{{ translations.register_button }}</button>
+                <a href="{{ url_for('main.login') }}" class="back-link">{{ translations.register_already_have_account }}</a>
+            </form>
+            <div id="toast" class="toast"></div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/register-attempt.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/password-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/form-validation.js') }}"></script>
+    <script>
+        window.translations = {{ translations | tojson }};
+    </script>
+</body>
+</html>

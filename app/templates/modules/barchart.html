@@ -1,0 +1,8 @@
+{% macro render_barchart_module(span, attribute, title, unit = '', max = 100, pan='CELULA_1', shift='1', date='1111-11-11') %}
+<div class="module barchart col-span-{{ span }}" id="barchart-{{ pan }}-{{ attribute }}">
+    <div class="chart-title" id="chart-title-{{ pan }}-{{ attribute }}">{{ title }}</div>
+    <div class="chart-body" id="chart-body-{{ pan }}-{{ attribute }}">
+        {# The Y-axis and bars are now fully rendered by module-barchart.js #}
+    </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,8 @@
+{% macro render_report_chart_module(span, selector, attribute_value, attribute_target, title, unit = '', pan='CELULA_1', shift='1', date='1111-11-11') %}
+<div class="module report-chart col-span-{{ span }}" id="report-chart-{{ selector }}-{{ pan }}-{{ attribute_value }}">
+    <div class="chart-title" id="chart-title-{{ selector }}-{{ pan }}-{{ attribute_value }}">{{ title }}</div>
+    <div class="chart-body report-chart-body" id="chart-body-{{ selector }}-{{ pan }}-{{ attribute_value }}">
+        {# The bullet chart is rendered by module-report-chart.js #}
+    </div>
+</div>
+{% endmacro %}

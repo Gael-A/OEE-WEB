@@ -1,0 +1,6 @@
+{% macro render_timeline_module(span, machine, section, pan='CELULA_1', shift='1', date='1111-11-11') %}
+
+<div class="module col-span-{{ span }} timeline-body" id="timeline-{{ machine or pan }}-{{ section }}"></div>
+{# The timeline is now rendered dynamically by /static/js/modules/timeline.js #}
+
+{% endmacro %}
