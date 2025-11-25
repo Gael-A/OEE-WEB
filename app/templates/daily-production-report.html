@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/clock.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/table-whiteboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form-whiteboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-dialog.css') }}">
 </head>
@@ -83,6 +84,60 @@
             </div>
             <div class="section-footer"></div>
 
+            <div class="indicators snap-section" id="start"></div>
+            <div class="section-header">
+                <h2>{{ translations.report_start_title }}</h2>
+            </div>
+            <div class="header-report">
+                <table class="start-report-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>!Comentarios</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label=""> 
+                                <div class="inputs-row">
+                                    <input type="number" id="first_piece_at_hour" min="1" max="12">
+                                    :
+                                    <input type="number" id="first_piece_at_minute" min="0" max="59">
+                                    <select id="first_piece_at_meridiem">
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                                <label for="first_piece_at_hour">!Hora que salio la primer pieza</label>
+                            </td>
+                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="first_piece_comment"></td>
+                        </tr>
+                        <tr>
+                            <td data-label="">
+                                <select name="is_line_wet" id="is_line_wet">
+                                    <option value="0">No</option>
+                                    <option value="1">Si</option>
+                                </select>
+                                <label for="is_line_wet">!¿La linea estaba mojada?</label> 
+                            </td>
+                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="line_wet_comment"></td>
+                        </tr>
+                        <tr>
+                            <td data-label="">
+                                <div class="inputs-row">
+                                    <input type="text" name="no_op_start" id="no_op_start" disabled>
+                                    VS
+                                    <input type="text"id="no_op_balancing" min="0">
+                                </div>
+                                <label for="no_op_start">!Operadores en linea vs en balanceo</label>
+                            </td>
+                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="no_op_balancing_comment"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="section-footer"></div>
+
             <div class="indicators snap-section" id="body"></div>
             <div class="section-header">
                 <h2>{{ translations.hourly_report }}</h2>
@@ -147,21 +202,21 @@
             </div>
             <div class="section-footer"></div>
 
-            <div class="indicators snap-section" id="machines"></div>
-            <div class="section-header">
+            <div class="indicators snap-section operating-machines-section" id="machines"></div>
+            <div class="section-header operating-machines-section">
                 <h2>{{ translations.operating_machines }}</h2>
             </div>
-            <div class="machine-container">
+            <div class="machine-container operating-machines-section">
                 {% for machine in machines %}
                 {{ machines_module.render_machine_module(machine) }}
                 {% endfor %}
             </div>
-            <div class="machine-actions-container hidden" id="machine-actions-container">
+            <div class="machine-actions-container hidden operating-machines-section" id="machine-actions-container">
                 <button id="cancel-changes-button" class="report-action-button cancel-action">{{
                     translations.report_cancel_changes_button }}</button>
                 <button id="apply-changes-button" class="report-action-button">{{ translations.report_apply_changes_button }}</button>
             </div>
-            <div class="section-footer"></div>
+            <div class="section-footer operating-machines-section"></div>
 
         </div>
     </div>
@@ -170,6 +225,7 @@
     <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/machines.js') }}" data-interactive="true"></script>
+    <script src="{{ url_for('static', filename='js/daily-report-func.js' ) }}"></script>
     <script src="{{ url_for('static', filename='js/input-validation.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
     <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>

@@ -24,10 +24,32 @@ bp = Blueprint("data", __name__)
 def available_panids():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT DISTINCT pan_id FROM machines ORDER BY pan_id ASC")
+    cursor.execute("SELECT pan_id FROM production_areas ORDER BY pan_id ASC")
     panids = [row["pan_id"] for row in cursor.fetchall()]
     conn.close()
     return jsonify(panids)
+
+# Ruta para obtener los parametros de todos los PAN IDs
+@bp.route("/pan-settings")
+def pan_settings():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM production_areas")
+    pan_settings = cursor.fetchall()
+    conn.close()
+    return jsonify(pan_settings)
+
+# Ruta para obtener los parametros de un PAN ID en especifico
+@bp.route("/pan-settings/<pan_id>")
+def pan_setting(pan_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM production_areas WHERE pan_id = %s", (pan_id,))
+    pan_setting = cursor.fetchone()
+    conn.close()
+    if pan_setting:
+        return jsonify(pan_setting)
+    return jsonify({"error": "PAN ID no encontrado"}), 404
 
 ################################################################################################
 

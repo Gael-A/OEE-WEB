@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             oldCurrentFormData.shift !== state.currentFormData.shift ||
             oldCurrentFormData.date !== state.currentFormData.date
         ) {
-            if (state.loaderType === 'report' && !initializing) {
+            if ((state.loaderType === 'report' || state.loaderType === 'plan') && !initializing) {
                 window.location.reload();
             } else {
                 setShiftByCurrentTime(setShiftValue);
@@ -170,6 +170,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             switch (loaderType) {
                 case 'report':
                     state.contentLoader = await import('./report-content-loader.js');
+                    break;
+                case 'plan':
+                    state.contentLoader = await import('./plan-content-loader.js');
                     break;
                 case 'viewer':
                     state.contentLoader = await import('./viewer-content-loader.js');

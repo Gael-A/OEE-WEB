@@ -650,15 +650,47 @@ async function loadReportContent(formData) {
     }
 }
 
+async function setPanSettings(pan) {
+    const operatingMachinesSection = document.querySelectorAll('.operating-machines-section');
+
+    try {
+        const responseSettings = await fetch(`/pan-settings/${pan}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    });
+
+    const dataSettings = await responseSettings.json();
+
+    if (!responseSettings.ok) {
+        showToast(dataSettings.error || window.translations.error_loading_pan_settings, false);
+        operatingMachinesSection.forEach(section => section.classList.add('hidden'));
+        return;
+    }
+
+    if (dataSettings.has_machines_in_system) {
+        operatingMachinesSection.forEach(section => section.classList.remove('hidden'));
+    } else {
+        operatingMachinesSection.forEach(section => section.classList.add('hidden'));
+    }
+
+    } catch (error) {
+        console.error("Error al obtener la configuración del PAN:", error);
+        showToast(window.translations.error_loading_pan_settings, false);
+        
+    }
+}
+
 export function handleInitialLoad(state) {
     console.log("Manejando carga inicial para la página de REPORTE.");
     const mode = state.modeAction.getAttribute("mode");
     const dataToLoad = mode === 'current' ? state.currentFormData : state.formData;
     loadReportContent(dataToLoad);
+    setPanSettings(dataToLoad.pan);
 }
 
 export function handlePastModeUpdate(state) {
     loadReportContent(state.formData);
+    setPanSettings(dataToLoad.pan);
 }
 
 export function handleCurrentModeUpdate(state) {

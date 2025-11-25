@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="{{ lang|default('en') }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ translations.title_production_report }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toolbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/machine.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/clock.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table-whiteboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form-whiteboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-dialog.css') }}">
+</head>
+
+<body>
+    {% set show_mode_toggle = session.get('role') == 'admin' and false %}
+    {% include 'modules/menus.html' %}
+    
+
+    <script type="module" src="{{ url_for('static', filename='js/tool-functionality.js') }}" data-loader="plan" data-user-role="{{ session.get('role', 'user') }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <!--
+        <script src="{{ url_for('static', filename='js/input-validation.js') }}" defer></script>
+    -->
+    <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
+    <script>
+        window.translations = {{ translations | tojson }};
+
+        const sessionTimeout = {{ session_timeout|default(0) }};
+        const logoutUrl = "{{ url_for('auth.logout_user') }}";
+        initSessionTimeout(sessionTimeout, logoutUrl);
+    </script>
+</body>

@@ -140,6 +140,20 @@ def viewer_daily_production_report():
 
     return render_template("viewer-daily-production-report.html", machines=machines, session_timeout=remaining_time, translations=translations, lang=lang)
 
+# Ruta para la página del plan de producción
+@bp.route("/production-plan")
+@login_required
+def production_plan():
+    session_lifetime = current_app.config['PERMANENT_SESSION_LIFETIME'].total_seconds()
+    login_time = session.get('login_time', time.time())
+    elapsed_time = time.time() - login_time
+    remaining_time = max(0, session_lifetime - elapsed_time)
+
+    translations = load_translations()
+    lang = session.get('language', 'es')
+
+    return render_template("production-plan.html", session_timeout=remaining_time, translations=translations, lang=lang)
+
 # Ruta para la página de login (ahora es la ruta principal)
 @bp.route('/login')
 def login():
@@ -305,8 +319,6 @@ def dashboard_debug():
     lang = session.get('language', 'es')
 
     return render_template("dashboard-debug.html", machines=machines, session_timeout=remaining_time, pan_id=pan_id, translations=translations, lang=lang)
-
-
 
 # Ruta auxiliar de ayuda para modulos JavaScript
 @bp.route('/static/js/<path:filename>')

@@ -21,6 +21,10 @@
         <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-add.svg') }}"
             alt="{{ translations.alt_hourly_report_link }}" title="{{ translations.title_hourly_report_link | upper }}"
             onclick="window.location.href=`{{ url_for('main.daily_production_report') }}`">
+
+        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-ranker.svg') }}"
+            alt="{{ translations.alt_ranker }}" title="{{ translations.title_ranker | upper }}"
+            onclick="window.location.href=`{{ url_for('main.production_plan') }}`">
         {% endif %}
 
         {% if session.get('role') in ['admin', 'supervisor'] %}
@@ -100,6 +104,12 @@
             <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-add.svg') }}"
                 alt="{{ translations.alt_hourly_report_link }}">
             <span>{{ translations.title_hourly_report_link | upper }}</span>
+        </div>
+
+        <div onclick="window.location.href=`{{ url_for('main.production_plan') }}`" class="sidebar-option">
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-ranker.svg') }}"
+                alt="{{ translations.alt_ranker }}">
+            <span>{{ translations.title_ranker | upper }}</span>
         </div>
         {% endif %}
 

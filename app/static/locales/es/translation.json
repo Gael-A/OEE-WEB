@@ -332,5 +332,9 @@
   "suggestion_update_success": "Sugerencia actualizada exitosamente.",
   "suggestion_update_error": "Error al actualizar la sugerencia.",
   "suggestion_from": "De",
-  "suggestion_data": "Sugerencia"
+  "suggestion_data": "Sugerencia",
+  "error_loading_pan_settings": "Error al cargar la configuración del PAN.",
+  "report_start_title": "REPORTE INICIO DE TURNO",
+  "alt_ranker": "Ranker",
+  "title_ranker": "PLAN DE PRODUCCIÓN"
 }

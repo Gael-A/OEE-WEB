@@ -270,3 +270,5 @@ function initMachineUI(machines, initialStates = {}) {
 
   checkForUnsavedChanges();
 }
+
+// ¯\_(ツ)_/¯

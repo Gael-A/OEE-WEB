@@ -332,5 +332,9 @@
   "suggestion_update_success": "Sugestia zaktualizowana pomyślnie.",
   "suggestion_update_error": "Błąd podczas aktualizacji sugestii.",
   "suggestion_from": "Od",
-  "suggestion_data": "Sugestia"
+  "suggestion_data": "Sugestia",
+  "error_loading_pan_settings": "Błąd ładowania ustawień PAN.",
+  "report_start_title": "RAPORT ROZPOCZĘCIA ZMIANY",
+  "alt_ranker": "Ranker",
+  "title_ranker": "PLAN PRODUKCJI"
 }

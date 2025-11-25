@@ -334,5 +334,9 @@
   "suggestion_update_success": "Suggestion updated successfully.",
   "suggestion_update_error": "Error updating suggestion.",
   "suggestion_from": "From",
-  "suggestion_data": "Suggestion"
+  "suggestion_data": "Suggestion",
+  "error_loading_pan_settings": "Error loading PAN settings.",
+  "report_start_title": "SHIFT START REPORT",
+  "alt_ranker": "Ranker",
+  "title_ranker": "PRODUCTION PLAN"
 }
