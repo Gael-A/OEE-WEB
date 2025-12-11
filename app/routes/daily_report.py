@@ -125,40 +125,67 @@ def get_open_daily_report():
             target_per_hour = _calculate_target_per_hour(cursor, report_header["id"], report_header["part_no"])
 
         daily_report_id = report_header["id"]
-        cursor.execute("SELECT * FROM hourly_production_report WHERE daily_id = %s ORDER BY start_hour ASC", (daily_report_id,))
+
+        cursor.execute("""
+            SELECT * FROM hourly_production_report 
+            WHERE daily_id = %s 
+            ORDER BY start_hour ASC
+        """, (daily_report_id,))
+        
         hourly_rows = cursor.fetchall()
 
-        last_update_timestamp = None
         if hourly_rows:
-            cursor.execute("SELECT MAX(created_at) as last_update FROM hourly_production_report WHERE daily_id = %s", (daily_report_id,))
+            cursor.execute("SELECT MAX(created_at) AS last_update FROM hourly_production_report WHERE daily_id = %s", (daily_report_id,))
             last_update_result = cursor.fetchone()
-            if last_update_result and last_update_result["last_update"]:
-                last_update_timestamp = last_update_result["last_update"].strftime("%d/%m/%y %H:%M")
+            last_update_timestamp = (
+                last_update_result["last_update"].strftime("%d/%m/%y %H:%M")
+                if last_update_result and last_update_result["last_update"]
+                else None
+            )
         else:
             last_update_timestamp = report_header["created_at"].strftime("%d/%m/%y %H:%M")
 
         last_end_hour = None
-        if not hourly_rows:
+
+        if hourly_rows:
+            last_end_hour = hourly_rows[-1]["end_hour"]
+
+            if isinstance(last_end_hour, timedelta):
+                total_seconds = int(last_end_hour.total_seconds())
+                h, r = divmod(total_seconds, 3600)
+                m, _ = divmod(r, 60)
+                last_end_hour = f"{h:02d}:{m:02d}"
+
+        else:
             report_created_at = report_header["created_at"]
+
             cursor.execute("""
                 SELECT id FROM daily_production_report
                 WHERE date = %s AND pan = %s AND shift = %s AND created_at < %s
                 ORDER BY created_at DESC
                 LIMIT 1
             """, (report_date, pan, shift, report_created_at))
+            
             prev_report = cursor.fetchone()
 
             if prev_report:
-                cursor.execute("SELECT MAX(end_hour) as last_hour FROM hourly_production_report WHERE daily_id = %s", (prev_report["id"],))
+                cursor.execute("""
+                    SELECT MAX(end_hour) AS last_hour 
+                    FROM hourly_production_report 
+                    WHERE daily_id = %s
+                """, (prev_report["id"],))
+                
                 last_hour_result = cursor.fetchone()
+                
                 if last_hour_result and last_hour_result["last_hour"]:
                     td = last_hour_result["last_hour"]
                     total_seconds = int(td.total_seconds())
-                    hours, remainder = divmod(total_seconds, 3600)
-                    minutes, seconds = divmod(remainder, 60)
-                    last_end_hour = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+                    h, r = divmod(total_seconds, 3600)
+                    m, _ = divmod(r, 60)
+                    last_end_hour = f"{h:02d}:{m:02d}"
 
         accumulated = 0
+
         for row in hourly_rows:
             for key, value in row.items():
                 if isinstance(value, timedelta):
@@ -169,7 +196,7 @@ def get_open_daily_report():
 
             accumulated += row.get("production", 0) or 0
             row["accumulated"] = accumulated
-            row["difference"] = (row.get("production", 0) or 0) - (row.get("target", 0) or 0)
+            row["difference"] = (row.get("production") or 0) - (row.get("target") or 0)
 
         return jsonify({
             "report_header": report_header,
@@ -183,6 +210,7 @@ def get_open_daily_report():
         if conn:
             conn.rollback()
         return jsonify({"error": f"Error interno del servidor: {e}"}), 500
+
     finally:
         if conn:
             conn.close()
@@ -627,6 +655,7 @@ def get_daily_report_result():
         if conn:
             conn.close()
 
+#############################################################################################
 
 @bp.route("/add-hourly-report", methods=["POST"])
 @login_required
@@ -834,7 +863,6 @@ def delete_hourly_report(hourly_id):
         if conn:
             conn.close()
 
-
 @bp.route("/report-attribute-data")
 def get_report_attribute_data():
     date = request.args.get("date")
@@ -1002,6 +1030,7 @@ def get_report_attribute_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+#############################################################################################
 
 @bp.route("/machines-initial-status", methods=["GET"])
 def get_machines_initial_status():
@@ -1226,3 +1255,103 @@ def view_machines_initial_status():
     finally:
         if conn:
             conn.close()
+
+#############################################################################################
+
+"""
+CREATE TABLE `shift_start_report` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `daily_id` int NOT NULL,
+  `first_piece_at` time DEFAULT NULL,
+  `first_piece_comment` text,
+  `no_op_start` int DEFAULT NULL,
+  `no_op_balancing` int DEFAULT NULL,
+  `no_op_comment` text,
+  `is_line_wet` tinyint(1) DEFAULT NULL,
+  `is_line_wet_comment` text,
+  PRIMARY KEY (`id`),
+  KEY `fk_shift_start_daily` (`daily_id`),
+  CONSTRAINT `fk_shift_start_daily` FOREIGN KEY (`daily_id`) REFERENCES `daily_production_report` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+"""
+
+@bp.route("/create-shift-start-report", methods=["POST"])
+@login_required
+def create_shift_start_report():
+    data = request.get_json()
+    daily_id = data.get("daily_id")
+    first_piece_at = data.get("first_piece_at")
+    first_piece_comment = data.get("first_piece_comment")
+    no_op_start = data.get("no_op_start")
+    no_op_balancing = data.get("no_op_balancing")
+    no_op_comment = data.get("no_op_comment")
+    is_line_wet = data.get("is_line_wet")
+    is_line_wet_comment = data.get("is_line_wet_comment")
+
+    if not daily_id:
+        return jsonify({"error": "Falta el ID del reporte diario."}), 400
+
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = """
+            INSERT INTO shift_start_report 
+            (daily_id, first_piece_at, first_piece_comment, no_op_start, no_op_balancing, no_op_comment, is_line_wet, is_line_wet_comment)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        values = (
+            daily_id,
+            first_piece_at,
+            first_piece_comment,
+            no_op_start,
+            no_op_balancing,
+            no_op_comment,
+            is_line_wet,
+            is_line_wet_comment,
+        )
+
+        cursor.execute(sql, values)
+        conn.commit()
+
+        return jsonify({"message": "Reporte de inicio de turno creado."}), 201
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": f"Error interno del servidor: {e}"}), 500
+    finally:
+        if conn:
+            conn.close()
+
+@bp.route("/get-shift-start-report", methods=["GET"])
+@login_required
+def get_shift_start_report():
+    daily_id = request.args.get("daily_id")
+
+    if not daily_id:
+        return jsonify({"error": "Falta el ID del reporte diario."}), 400
+
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM shift_start_report WHERE daily_id = %s;", (daily_id,))        
+        report = cursor.fetchone()
+
+        if report and report.get("first_piece_at"):
+            report["first_piece_at"] = str(report["first_piece_at"])
+
+        if not report:
+            return jsonify({"report": None}), 404
+
+        return jsonify({"report": report}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Error interno del servidor: {e}"}), 500
+    finally:
+        if conn:
+            conn.close()
+

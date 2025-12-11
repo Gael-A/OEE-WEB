@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         panSelect.dispatchEvent(new Event('change'));
     }
 
-    //Establece el valor del selector de turno y actualiza el estado
+    //Establece el valor del selector de turno y actualiza su estado
     function setShiftValue(shiftValue) {
         shiftSelect.value = shiftValue;
         shiftSelect.dispatchEvent(new Event("change"));
@@ -100,12 +100,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             date: dateInput.value
         };
 
+        // -------------------------------
+        // ✅ AGREGADO: Exponer globalmente
+        // -------------------------------
+        window.filters = {
+            pan: state.formData.pan,
+            shift: state.formData.shift,
+            date: state.formData.date
+        };
+        // -------------------------------
+
         if (modeAction.getAttribute("mode") === 'past') {
             modeAction.classList.add('outdated');
         }
     }
 
-    //Calcula y actualiza el estado para el modo 'Actual' (`state.currentFormData`)
+    //Calcula y actualiza el estado para el modo 'Actual'
     function updateCurrentFormData() {
         const oldCurrentFormData = state.currentFormData;
         const now = new Date();
@@ -141,7 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    //Actualiza el reloj en la UI si está en modo 'Actual'
+    //Actualiza el reloj en la UI cuando está en modo 'Actual'
     function updateClock() {
         const mode = modeToggle?.getAttribute('mode');
         if (mode === 'current') {
@@ -187,7 +197,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- Event Listeners para los Controles del Formulario ---
     panSelect.onchange = () => {
         const selected = panSelect.options[panSelect.selectedIndex];
         panLabel.textContent = selected.textContent;
@@ -196,7 +205,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!initializing) {
             const urlParams = { pan: state.formData.pan };
 
-            if (state.loaderType === 'dashboard' || state.loaderType === 'viewer' ) {
+            if (state.loaderType === 'dashboard' || state.loaderType === 'viewer') {
                 urlParams.shift = state.formData.shift;
                 urlParams.date = state.formData.date;
             }
@@ -210,7 +219,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             previousPan = panSelect.value;
             window.location.reload();
         }
-
     };
 
     shiftSelect.onchange = () => {
@@ -224,7 +232,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateFormData();
     };
 
-    // Maneja la visibilidad de los menús desplegables
+    // Manejo de visibilidad de dropdowns
     [panDropdown, shiftDropdown, dateDropdown].forEach(dropdown => {
         dropdown.onclick = (e) => {
             e.stopPropagation();
@@ -238,13 +246,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     });
 
-    // --- Configuración de Funcionalidad del Modo (Actual/Pasado) ---
+    // Funcionalidad del Modo Actual/Pasado
     state.modeToggle = modeToggle;
     state.modeAction = modeAction;
     state.updateDate = updateDate;
     state.setShiftByCurrentTime = () => setShiftByCurrentTime(setShiftValue);
 
-    // Listener para el botón que cambia entre modo 'Actual' y 'Pasado'
+    // Botón Actual/Pasado
     if (modeToggle) {
         modeToggle.addEventListener("click", () => {
             toggleMode(state);
@@ -258,7 +266,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Listener para el botón de 'Actualizar' que recarga los datos en modo 'Pasado'
+    // Botón Actualizar en modo Pasado
     if (modeAction) {
         modeAction.addEventListener("click", function () {
             if (modeToggle.getAttribute("mode") === "past") {
@@ -268,7 +276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // --- Bloque de Inicialización de la Página ---
+    // --- Inicialización ---
     await loadContentLoader();
 
     await loadPanOptions(panSelect, panMenu, panLabel, createDropdownOptions);
@@ -289,6 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setInterval(updateClock, 1000);
     updateClock();
 
+    // Actualización automática por minuto (solo en modo Actual)
     setInterval(() => {
         if (modeToggle.getAttribute("mode") === 'current') {
             state.contentLoader?.handleCurrentModeUpdate(state);

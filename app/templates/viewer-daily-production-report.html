@@ -21,7 +21,7 @@
     {% set nav_items = [
         { 'id': 'current', 'icon': 'svg/icon-current.svg', 'alt_text': translations.alt_current_report, 'label': translations.nav_current_report },
         { 'id': 'results', 'icon': 'svg/icon-result.svg', 'alt_text': translations.alt_results, 'label': translations.nav_results },
-        { 'id': 'machines', 'icon': 'svg/icon-machine.svg', 'alt_text': translations.alt_operating_machines, 'label': translations.operating_machines },
+        { 'id': 'machines', 'icon': 'svg/icon-machine.svg', 'alt_text': translations.alt_operating_machines, 'label': translations.operating_machines, 'class': 'operating-machines-section' },
         { 'id': 'history', 'icon': 'svg/icon-history.svg', 'alt_text': translations.alt_history, 'label': translations.nav_history }
     ] %}
 
@@ -87,18 +87,73 @@
             </div>
             <div class="section-footer"></div>
 
-            <div class="indicators snap-section" id="machines" ></div>
-            <div class="section-header">
+            <!-- Section of Start Shift .daily-start-section -->
+            <div class="indicators snap-section daily-start-section hidden" id="daily-start-info"></div>
+            <div class="section-header daily-start-section">
+                <h2>{{ translations.report_start_title }}</h2>
+            </div>
+            <div class="header-report daily-start-section">
+                <table class="start-report-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>!Comentarios</th>
+                        </tr>
+                    </thead>
+                    <tbody style="display: table-row-group;">
+                        <tr>
+                            <td data-label=""> 
+                                <div class="inputs-row">
+                                    <input type="number" id="first_piece_at_hour" min="1" max="12" disabled>
+                                    :
+                                    <input type="number" id="first_piece_at_minute" min="0" max="59" disabled>
+                                    <select id="first_piece_at_meridiem" disabled>
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                                <label for="first_piece_at_hour">!Hora que salio la primer pieza</label>
+                            </td>
+                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="first_piece_comment" disabled></td>
+                        </tr>
+                        <tr>
+                            <td data-label="">
+                                <select name="is_line_wet" id="is_line_wet" class="negative" disabled>
+                                    <option value="0">No</option>
+                                    <option value="1">Si</option>
+                                </select>
+                                <label for="is_line_wet">!¿La linea estaba mojada?</label> 
+                            </td>
+                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="line_wet_comment" class="negative" disabled></td>
+                        </tr>
+                        <tr>
+                            <td data-label="">
+                                <div class="inputs-row">
+                                    <input type="number" name="no_op_start" id="no_op_start" disabled>
+                                    VS
+                                    <input type="number"id="no_op_balancing" min="0" disabled>
+                                </div>
+                                <label for="no_op_start">!Operadores en linea vs en balanceo</label>
+                            </td>
+                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="no_op_balancing_comment" disabled></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="section-footer daily-start-section"></div>
+
+            <div class="indicators snap-section operating-machines-section" id="machines" ></div>
+            <div class="section-header operating-machines-section">
                 <h2 id="machines-section-title">{{ translations.viewer_machines_operating_now }}</h2>
             </div>
-            <div class="machine-container">
+            <div class="machine-container operating-machines-section">
                 {% for machine in machines %}
                     {{ machines_module.render_machine_module(machine) }}
                 {% endfor %}
             </div>
-            <div class="machine-actions-container hidden" id="machine-actions-container">
+            <div class="machine-actions-container operating-machines-section hidden" id="machine-actions-container">
             </div>
-            <div class="section-footer"></div>
+            <div class="section-footer operating-machines-section"></div>
 
             <div class="indicators snap-section" id="history"></div>
             <div class="section-header">
@@ -131,7 +186,8 @@
     <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/machines.js') }}" data-interactive="false"></script>
-   <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/daily-report-func.js' ) }}"></script>
+    <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
     <script>
         window.machines = {{ machines | tojson }};
         window.translations = {{ translations | tojson }};

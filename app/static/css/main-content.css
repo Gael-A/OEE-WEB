@@ -63,7 +63,7 @@ body {
 
 .section-footer {
     width: calc(100% + 80px);
-    margin: 30px auto 10px auto;
+    margin: 20px auto 10px auto;
     padding: 8px 0;
     border-bottom: 2px solid var(--brand-color-light, rgba(0, 0, 0, 0.1));
     text-align: center;

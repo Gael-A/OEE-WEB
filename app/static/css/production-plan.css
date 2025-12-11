@@ -1,0 +1,294 @@
+.board {
+    background-color: var(--whiteboard-background);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.prod-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--whiteboard-text-primary);
+    font-size: 0.9rem;
+    table-layout: fixed;
+}
+
+.prod-table thead tr {
+    background-color: var(--brand-color-light);
+    color: var(--main-text-module);
+    text-align: left;
+}
+
+.prod-table th,
+.prod-table td {
+    padding: 12px 15px;
+    border: 1px solid var(--whiteboard-divider);
+    vertical-align: middle;
+    word-wrap: break-word;
+}
+
+.prod-table th {
+    font-weight: 600;
+}
+
+.production-table th:first-child,
+.production-table td:first-child {
+    width: 40px;
+    text-align: center;
+}
+
+.prod-table tbody tr {
+    border-bottom: 1px solid var(--whiteboard-divider);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.prod-table tbody tr:nth-of-type(even) {
+    background-color: var(--whiteboard-row-done-mobile-background);
+}
+
+.prod-table tbody tr:last-of-type {
+    border-bottom: 2px solid var(--brand-color);
+}
+
+.drag-cell {
+    cursor: grab;
+    background-color: var(--brand-color-light);
+    background-image: url('../svg/icon-ranker.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 32px;
+    border-right: 1px solid var(--whiteboard-divider);
+    padding: 0 10px;
+}
+
+.drag-cell:active {
+    cursor: grabbing;
+}
+
+.prod-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.prod-table thead th,
+#production-table td:nth-child(2),
+#production-table td:nth-child(n + 4):nth-child(-n + 6) {
+    text-align: center;
+}
+
+#production-table th:first-child,
+#production-table td:first-child {
+    width: 1%;
+}
+
+#production-table th:nth-child(2),
+#production-table td:nth-child(2) {
+    width: 7%;
+}
+
+#production-table th:nth-child(3),
+#production-table td:nth-child(3) {
+    width: 10%;
+}
+
+#production-table th:nth-child(n + 4):nth-child(-n + 6),
+#production-table td:nth-child(n + 4):nth-child(-n + 6) {
+    width: 6%;
+}
+
+#completed-table tbody {
+    opacity: 0.5;
+}
+
+#completed-table th:first-child,
+#completed-table td:first-child,
+#completed-table th:nth-child(6),
+#completed-table td:nth-child(6) {
+    width: 10%;
+}
+
+#completed-table th:nth-child(n + 2):nth-child(-n + 4),
+#completed-table td:nth-child(n + 2):nth-child(-n + 4) {
+    width: 6%;
+    text-align: center;
+}
+
+.prod-table th:last-child,
+.prod-table td:last-child {
+    width: 1%;
+}
+
+/* ------------------------------ */
+/*       INPUTS (existente)       */
+/* ------------------------------ */
+.prod-table input[type="text"],
+.prod-table input[type="number"] {
+    width: 100%;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    padding: 6px 8px;
+    font-size: 0.9rem;
+    color: var(--whiteboard-text-primary);
+
+    background-color: var(--whiteboard-background);
+    border: 1px solid var(--whiteboard-divider);
+    border-radius: 4px;
+
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.prod-table input[type="text"]:hover,
+.prod-table input[type="number"]:hover {
+    border-color: var(--brand-color);
+}
+
+.prod-table input[type="text"]:focus,
+.prod-table input[type="number"]:focus {
+    outline: none;
+    border-color: var(--brand-color);
+    background-color: var(--whiteboard-row-done-mobile-background);
+}
+
+.prod-table input[type="number"]::-webkit-outer-spin-button,
+.prod-table input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.prod-table input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.prod-table textarea {
+    width: 100%;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    padding: 6px 8px;
+    font-family: system-ui;
+    font-size: 0.9rem;
+    color: var(--whiteboard-text-primary);
+    background-color: var(--whiteboard-background);
+    border: 1px solid var(--whiteboard-divider);
+    border-radius: 4px;
+    resize: none;
+    overflow: hidden;
+    line-height: 1.2;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+
+.prod-table textarea:hover {
+    border-color: var(--brand-color);
+}
+
+.prod-table textarea:focus {
+    outline: none;
+    border-color: var(--brand-color);
+    background-color: var(--whiteboard-row-done-mobile-background);
+}
+
+.prod-table td.action-td {
+    padding: .5rem;
+    text-align: center;
+}
+
+.prod-table td.action-td .action-button {
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 0.05s ease;
+}
+
+.prod-table td.action-td .action-button:hover {
+    transform: scale(1.1);
+}
+
+@media screen and (max-width: 768px) {
+
+    .prod-table {
+        border: 0;
+        table-layout: auto;
+    }
+
+    .prod-table thead {
+        display: none;
+    }
+
+    .prod-table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid var(--whiteboard-divider);
+        border-radius: 8px;
+        background-color: var(--whiteboard-background);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        color: var(--whiteboard-text-primary);
+        padding: 0.5rem 1rem;
+    }
+
+    .prod-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 12px 0;
+        text-align: right;
+        border: none;
+        border-bottom: 1px solid var(--whiteboard-row-done-mobile-background);
+        position: relative;
+    }
+
+    .prod-table td:last-child {
+        border-bottom: 0;
+    }
+
+    .prod-table td:first-child {
+        justify-content: flex-start;
+        text-align: left;
+        padding-left: 0;
+    }
+
+    .prod-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--whiteboard-text-secondary);
+        text-align: left;
+        padding-right: 10px;
+    }
+
+    .prod-table td:nth-of-type(1)::before {
+        content: "Mover:";
+    }
+
+    .prod-table td:nth-of-type(2)::before {
+        content: "Prioridad:";
+    }
+
+    .prod-table td:nth-of-type(3)::before {
+        content: "Job Orden:";
+    }
+
+    .prod-table td:nth-of-type(4)::before {
+        content: "Cant. Requerida:";
+    }
+
+    .prod-table td:nth-of-type(5)::before {
+        content: "Salida Real:";
+    }
+
+    .prod-table td:nth-of-type(6)::before {
+        content: "Delta:";
+    }
+
+    .prod-table td:nth-of-type(7)::before {
+        content: "Comentarios:";
+    }
+
+    .prod-table input[type="text"],
+    .prod-table input[type="number"],
+    .prod-table textarea {
+        max-width: 60%;
+        width: 100%;
+        width: -webkit-fill-available;
+    }
+}

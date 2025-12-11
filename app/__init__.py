@@ -1,5 +1,5 @@
 from flask import Flask
-from .routes import daily_report, main, get_data, auth, debug, users, chatbot, suggestions, pan_schedule
+from .routes import daily_report, main, get_data, auth, debug, users, chatbot, suggestions, pan_schedule, production_plan
 from datetime import timedelta
 
 def create_app():
@@ -17,5 +17,6 @@ def create_app():
     app.register_blueprint(chatbot.bp)
     app.register_blueprint(suggestions.bp)
     app.register_blueprint(pan_schedule.bp)
+    app.register_blueprint(production_plan.bp)
 
     return app

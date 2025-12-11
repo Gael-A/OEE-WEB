@@ -84,11 +84,11 @@
             </div>
             <div class="section-footer"></div>
 
-            <div class="indicators snap-section" id="start"></div>
-            <div class="section-header">
+            <div class="indicators snap-section daily-start-section" id="start"></div>
+            <div class="section-header daily-start-section">
                 <h2>{{ translations.report_start_title }}</h2>
             </div>
-            <div class="header-report">
+            <div class="header-report daily-start-section">
                 <table class="start-report-table">
                     <thead>
                         <tr>
@@ -114,20 +114,20 @@
                         </tr>
                         <tr>
                             <td data-label="">
-                                <select name="is_line_wet" id="is_line_wet">
+                                <select name="is_line_wet" id="is_line_wet" class="negative">
                                     <option value="0">No</option>
                                     <option value="1">Si</option>
                                 </select>
                                 <label for="is_line_wet">!¿La linea estaba mojada?</label> 
                             </td>
-                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="line_wet_comment"></td>
+                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="line_wet_comment" class="negative"></td>
                         </tr>
                         <tr>
                             <td data-label="">
                                 <div class="inputs-row">
-                                    <input type="text" name="no_op_start" id="no_op_start" disabled>
+                                    <input type="number" name="no_op_start" id="no_op_start" disabled>
                                     VS
-                                    <input type="text"id="no_op_balancing" min="0">
+                                    <input type="number"id="no_op_balancing" min="0">
                                 </div>
                                 <label for="no_op_start">!Operadores en linea vs en balanceo</label>
                             </td>
@@ -136,7 +136,10 @@
                     </tbody>
                 </table>
             </div>
-            <div class="section-footer"></div>
+            <div class="report-actions-container">
+                <button id="close-start-report-button" class="report-action-button disabled hidden">!Close Shift Start Report</button>
+            </div>
+            <div class="section-footer daily-start-section"></div>
 
             <div class="indicators snap-section" id="body"></div>
             <div class="section-header">
@@ -226,6 +229,7 @@
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/machines.js') }}" data-interactive="true"></script>
     <script src="{{ url_for('static', filename='js/daily-report-func.js' ) }}"></script>
+    <script src="{{ url_for('static', filename='js/daily-report-attempt.js' ) }}"></script>
     <script src="{{ url_for('static', filename='js/input-validation.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
     <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>

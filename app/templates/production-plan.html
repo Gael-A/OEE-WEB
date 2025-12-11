@@ -11,32 +11,135 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/toolbar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/machine.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/clock.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/table-whiteboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/form-whiteboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table-whiteboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-dialog.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/production-plan.css') }}">
 </head>
 
 <body>
+    {% set nav_items = [
+    { 'id': 'add-job', 'icon': 'svg/action-add.svg', 'alt_text': "!Agregar job order", 'label': "!AGREGAR JOB ORDER"},
+    { 'id': 'production-plan', 'icon': 'svg/icon-ranker.svg', 'alt_text': "!Plan de producción", 'label': "!PLAN DE PRODUCCIÓN" },
+    { 'id': 'last-completed-job', 'icon': 'svg/icon-history.svg', 'alt_text': "!Last completed job orders", 'label': "!LAST COMPLETED JOB ORDERS" }
+    ] %}
+
     {% set show_mode_toggle = session.get('role') == 'admin' and false %}
     {% include 'modules/menus.html' %}
-    
 
+    <div class="main snap-container">
+        <div class="content">
+
+ 
+            <div class="indicators snap-section" id="add-job"></div>
+            <div class="section-header">
+                <h2>!AGREGAR JOB ORDER</h2>
+            </div>
+
+            <div class="header-report">
+                <table class="header-report-table job-add-table">
+                    <thead>
+                        <tr>
+                            <th>!#Job Orden</th>
+                            <th>!Cantidad Requerida</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td data-label="!#Job Orden">
+                                <input type="text" id="aj-job" required>
+                            </td>
+
+                            <td data-label="!Cantidad Requerida">
+                                <input type="number" id="aj-req" min="0" required>
+                            </td>
+
+                            <td data-label="">
+                                <div class="action-button" id="add-job-button" title="Agregar al plan de producción">
+                                    <img src="{{ url_for('static', filename='svg/action-add-green.svg') }}" alt="Agregar">
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-footer"></div>
+
+            <div class="indicators snap-section" id="production-plan"></div>
+            <div class="section-header">
+                <h2>!PLAN DE PRODUCCIÓN</h2>
+            </div>
+            <div class="board">
+                <table id="production-table" class="prod-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>!Prioridades</th>
+                            <th>!#Job Orden</th>
+                            <th>!Cantidad Requerida</th>
+                            <th>!Salida Real</th>
+                            <th>!Delta</th>
+                            <th>!Requerimientos Especiales o Comentarios</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="section-footer"></div>
+
+
+            <div class="indicators snap-section" id="last-completed-job"></div>
+            <div class="section-header">
+                <h2>!Last Completed Job Orders</h2>
+            </div>
+
+            <div class="board">
+                <table id="completed-table" class="prod-table">
+                    <thead>
+                        <tr>
+                            <th>!#Job Orden</th>
+                            <th>!Cantidad Requerida</th>
+                            <th>!Salida Real</th>
+                            <th>!Delta</th>
+                            <th>!Requerimientos Especiales o Comentarios</th>
+                            <th>!Fecha</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-footer"></div>
+
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/production-plan-func.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/tool-functionality.js') }}" data-loader="plan" data-user-role="{{ session.get('role', 'user') }}"></script>
     <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     <!--
         <script src="{{ url_for('static', filename='js/input-validation.js') }}" defer></script>
     -->
-    <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
     <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
+
     <script>
         window.translations = {{ translations | tojson }};
 
-        const sessionTimeout = {{ session_timeout|default(0) }};
+        const sessionTimeout = {{ session_timeout|default (0) }};
         const logoutUrl = "{{ url_for('auth.logout_user') }}";
         initSessionTimeout(sessionTimeout, logoutUrl);
     </script>

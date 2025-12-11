@@ -3,71 +3,74 @@
     <img class="sidebar-logo" src="{{ url_for('static', filename='img/ilc_logo_light.png') }}"
         alt="{{ translations.alt_ilc_logo }}">
 
-    {% for item in nav_items %}
-    <img class="sidebar-option-icon" src="{{ url_for('static', filename=item.icon) }}" alt="{{ item.alt_text }}"
-        title="{{ item.label | upper }}"
-        onclick="document.getElementById('{{ item.id }}').scrollIntoView({ behavior: 'smooth' });">
-    {% endfor %}
+    <div class="items-container">
+        {% for item in nav_items %}
+        <img class="sidebar-option-icon {{ item.class }}" src="{{ url_for('static', filename=item.icon) }}" alt="{{ item.alt_text }}"
+            title="{{ item.label | upper }}"
+            onclick="document.getElementById('{{ item.id }}').scrollIntoView({ behavior: 'smooth' });">
+        {% endfor %}
 
-    <div class="sidebar-divider"></div>
+        <div class="sidebar-divider"></div>
 
-    <div class="sidebar-actions-wrapper">
-        {% if session.user_id %}
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-dashboard.svg') }}"
-            alt="{{ translations.alt_dashboard }}" title="{{ translations.title_dashboard | upper }}"
-            onclick="window.location.href=`{{ url_for('main.dashboard') }}`">
+        <div class="sidebar-actions-wrapper">
+            {% if session.user_id %}
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-dashboard.svg') }}"
+                alt="{{ translations.alt_dashboard }}" title="{{ translations.title_dashboard | upper }}"
+                onclick="window.location.href=`{{ url_for('main.dashboard') }}`">
 
-        {% if session.get('role') in ['admin', 'production_leader'] %}
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-add.svg') }}"
-            alt="{{ translations.alt_hourly_report_link }}" title="{{ translations.title_hourly_report_link | upper }}"
-            onclick="window.location.href=`{{ url_for('main.daily_production_report') }}`">
+            {% if session.get('role') in ['admin', 'production_leader'] %}
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-add.svg') }}"
+                alt="{{ translations.alt_hourly_report_link }}" title="{{ translations.title_hourly_report_link | upper }}"
+                onclick="window.location.href=`{{ url_for('main.daily_production_report') }}`">
 
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-ranker.svg') }}"
-            alt="{{ translations.alt_ranker }}" title="{{ translations.title_ranker | upper }}"
-            onclick="window.location.href=`{{ url_for('main.production_plan') }}`">
-        {% endif %}
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-ranker.svg') }}"
+                alt="{{ translations.alt_ranker }}" title="{{ translations.title_ranker | upper }}"
+                onclick="window.location.href=`{{ url_for('main.production_plan') }}`">
+            {% endif %}
 
-        {% if session.get('role') in ['admin', 'supervisor'] %}
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-view.svg') }}"
-            alt="{{ translations.alt_view_reports }}" title="{{ translations.title_view_reports | upper }}"
-            onclick="window.location.href=`{{ url_for('main.viewer_daily_production_report') }}`">
-        {% endif %}
+            {% if session.get('role') in ['admin', 'supervisor'] %}
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-view.svg') }}"
+                alt="{{ translations.alt_view_reports }}" title="{{ translations.title_view_reports | upper }}"
+                onclick="window.location.href=`{{ url_for('main.viewer_daily_production_report') }}`">
+            {% endif %}
 
-        {% if session.get('role') == 'admin' %}
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-user-administrator.svg') }}"
-            alt="{{ translations.alt_user_administrator }}" title="{{ translations.title_user_administrator | upper }}"
-            onclick="window.location.href=`{{ url_for('main.user_administrator') }}`">
+            {% if session.get('role') == 'admin' %}
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-user-administrator.svg') }}"
+                alt="{{ translations.alt_user_administrator }}" title="{{ translations.title_user_administrator | upper }}"
+                onclick="window.location.href=`{{ url_for('main.user_administrator') }}`">
 
-            
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-suggestion-mailbox.svg') }}"
-            alt="{{ translations.alt_suggestion_mailbox }}" title="{{ translations.title_suggestion_mailbox | upper }}"
-            onclick="window.location.href=`{{ url_for('main.suggestion_mailbox') }}`">
-            
-        {% endif %}
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-suggestion-box.svg') }}"
-            alt="{{ translations.alt_suggestion_box }}" title="{{ translations.title_suggestion_box | upper }}"
-            onclick="window.location.href=`{{ url_for('main.suggestion_box') }}`">
-        {% endif %}
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-dashboard-screen.svg') }}"
-            alt="{{ translations.alt_dashboard_screen }}" title="{{ translations.title_dashboard_screen | upper }}"
-            onclick="window.location.href=`{{ url_for('main.dashboard_screen') }}`">
-    </div>
+                
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-suggestion-mailbox.svg') }}"
+                alt="{{ translations.alt_suggestion_mailbox }}" title="{{ translations.title_suggestion_mailbox | upper }}"
+                onclick="window.location.href=`{{ url_for('main.suggestion_mailbox') }}`">
+                
+            {% endif %}
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-suggestion-box.svg') }}"
+                alt="{{ translations.alt_suggestion_box }}" title="{{ translations.title_suggestion_box | upper }}"
+                onclick="window.location.href=`{{ url_for('main.suggestion_box') }}`">
+            {% endif %}
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-dashboard-screen.svg') }}"
+                alt="{{ translations.alt_dashboard_screen }}" title="{{ translations.title_dashboard_screen | upper }}"
+                onclick="window.location.href=`{{ url_for('main.dashboard_screen') }}`">
+        </div>
 
-    <div class="sidebar-divider"></div>
 
-    <div class="sidebar-actions-wrapper">
-        {% if session.user_id %}
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-user.svg') }}"
-            alt="{{ translations.alt_user_profile }}" title="{{ (session.full_name or '') | upper }}"
-            onclick="window.location.href=`{{ url_for('main.profile') }}`">
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-logout.svg') }}"
-            alt="{{ translations.alt_logout }}" title="{{ translations.title_logout | upper }}"
-            onclick="window.location.href=`{{ url_for('auth.logout_user') }}`">
-        {% else %}
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-login.svg') }}"
-            alt="{{ translations.alt_login }}" title="{{ translations.title_login | upper }}"
-            onclick="window.location.href=`{{ url_for('main.login') }}`">
-        {% endif %}
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-actions-wrapper">
+            {% if session.user_id %}
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-user.svg') }}"
+                alt="{{ translations.alt_user_profile }}" title="{{ (session.full_name or '') | upper }}"
+                onclick="window.location.href=`{{ url_for('main.profile') }}`">
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-logout.svg') }}"
+                alt="{{ translations.alt_logout }}" title="{{ translations.title_logout | upper }}"
+                onclick="window.location.href=`{{ url_for('auth.logout_user') }}`">
+            {% else %}
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-login.svg') }}"
+                alt="{{ translations.alt_login }}" title="{{ translations.title_login | upper }}"
+                onclick="window.location.href=`{{ url_for('main.login') }}`">
+            {% endif %}
+        </div>
     </div>
 </div>
 
@@ -75,101 +78,106 @@
     <img class="sidebar-logo" src="{{ url_for('static', filename='img/ilc_logo_light.png') }}"
         alt="{{ translations.alt_ilc_logo }}">
 
-    <div class="sidebar-section-header">{{ translations.sidebar_on_this_page | upper }}</div>
+    <div class="items-container">
 
-    {% for item in nav_items %}
-    <div class="sidebar-option">
-        <img class="sidebar-option-icon" src="{{ url_for('static', filename=item.icon) }}" alt="{{ item.alt_text }}"
-            onclick="document.getElementById('{{ item.id }}').scrollIntoView({ behavior: 'smooth' });">
-        <a onclick="document.getElementById('{{ item.id }}').scrollIntoView({ behavior: 'smooth' });">
-            {{ item.label | upper }}
-        </a>
+        <div class="sidebar-section-header">{{ translations.sidebar_on_this_page | upper }}</div>
+
+        {% for item in nav_items %}
+        <div class="sidebar-option {{ item.class }}">
+            <img class="sidebar-option-icon" src="{{ url_for('static', filename=item.icon) }}" alt="{{ item.alt_text }}"
+                onclick="document.getElementById('{{ item.id }}').scrollIntoView({ behavior: 'smooth' });">
+            <a onclick="document.getElementById('{{ item.id }}').scrollIntoView({ behavior: 'smooth' });">
+                {{ item.label | upper }}
+            </a>
+        </div>
+        {% endfor %}
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section-header">{{ translations.sidebar_application_links | upper }}</div>
+
+        <div class="sidebar-actions-wrapper">
+            {% if session.user_id %}
+            <div onclick="window.location.href=`{{ url_for('main.dashboard') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-dashboard.svg') }}"
+                    alt="{{ translations.alt_dashboard }}">
+                <span>{{ translations.title_dashboard | upper }}</span>
+            </div>
+
+            {% if session.get('role') in ['admin', 'production_leader'] %}
+            <div onclick="window.location.href=`{{ url_for('main.daily_production_report') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-add.svg') }}"
+                    alt="{{ translations.alt_hourly_report_link }}">
+                <span>{{ translations.title_hourly_report_link | upper }}</span>
+            </div>
+
+            <div onclick="window.location.href=`{{ url_for('main.production_plan') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-ranker.svg') }}"
+                    alt="{{ translations.alt_ranker }}">
+                <span>{{ translations.title_ranker | upper }}</span>
+            </div>
+            {% endif %}
+
+            {% if session.get('role') in ['admin', 'supervisor'] %}
+            <div onclick="window.location.href=`{{ url_for('main.viewer_daily_production_report') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-view.svg') }}"
+                    alt="{{ translations.alt_view_reports }}">
+                <span>{{ translations.title_view_reports | upper }}</span>
+            </div>
+            {% endif %}
+
+            {% if session.get('role') == 'admin' %}
+            <div onclick="window.location.href=`{{ url_for('main.user_administrator') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-user-administrator.svg') }}"
+                    alt="{{ translations.alt_user_administrator }}">
+                <span>{{ translations.title_user_administrator | upper }}</span>
+            </div>
+            <div onclick="window.location.href=`{{ url_for('main.suggestion_mailbox') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-suggestion-mailbox.svg') }}"
+                    alt="{{ translations.alt_suggestion_mailbox }}">
+                <span>{{ translations.title_suggestion_mailbox | upper }}</span>
+            </div>
+            {% endif %}
+
+            <div onclick="window.location.href=`{{ url_for('main.suggestion_box') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-suggestion-box.svg') }}"
+                    alt="{{ translations.alt_suggestion_box }}">
+                <span>{{ translations.title_suggestion_box | upper }}</span>
+            </div>
+            {% endif %}
+            <div onclick="window.location.href=`{{ url_for('main.dashboard_screen') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-dashboard-screen.svg') }}"
+                    alt="{{ translations.alt_dashboard_screen }}">
+                <span>{{ translations.title_dashboard_screen | upper }}</span>
+            </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section-header">{{ translations.sidebar_user_section | upper }}</div>
+        <div class="sidebar-actions-wrapper">
+            {% if session.user_id %}
+            <div onclick="window.location.href=`{{ url_for('main.profile') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-user.svg') }}"
+                    alt="{{ translations.alt_user_profile }}">
+                <span>{{ (session.full_name or '') | upper }}</span>
+            </div>
+            <div onclick="window.location.href=`{{ url_for('auth.logout_user') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-logout.svg') }}"
+                    alt="{{ translations.alt_logout }}">
+                <span>{{ translations.title_logout | upper }}</span>
+            </div>
+            {% else %}
+            <div onclick="window.location.href=`{{ url_for('main.login') }}`" class="sidebar-option">
+                <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-login.svg') }}"
+                    alt="{{ translations.alt_login }}">
+                <span>{{ translations.title_login | upper }}</span>
+            </div>
+            {% endif %}
+        </div>
+
     </div>
-    {% endfor %}
 
-    <div class="sidebar-divider"></div>
-
-    <div class="sidebar-section-header">{{ translations.sidebar_application_links | upper }}</div>
-
-    <div class="sidebar-actions-wrapper">
-        {% if session.user_id %}
-        <div onclick="window.location.href=`{{ url_for('main.dashboard') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-dashboard.svg') }}"
-                alt="{{ translations.alt_dashboard }}">
-            <span>{{ translations.title_dashboard | upper }}</span>
-        </div>
-
-        {% if session.get('role') in ['admin', 'production_leader'] %}
-        <div onclick="window.location.href=`{{ url_for('main.daily_production_report') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-add.svg') }}"
-                alt="{{ translations.alt_hourly_report_link }}">
-            <span>{{ translations.title_hourly_report_link | upper }}</span>
-        </div>
-
-        <div onclick="window.location.href=`{{ url_for('main.production_plan') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-ranker.svg') }}"
-                alt="{{ translations.alt_ranker }}">
-            <span>{{ translations.title_ranker | upper }}</span>
-        </div>
-        {% endif %}
-
-        {% if session.get('role') in ['admin', 'supervisor'] %}
-        <div onclick="window.location.href=`{{ url_for('main.viewer_daily_production_report') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-view.svg') }}"
-                alt="{{ translations.alt_view_reports }}">
-            <span>{{ translations.title_view_reports | upper }}</span>
-        </div>
-        {% endif %}
-
-        {% if session.get('role') == 'admin' %}
-        <div onclick="window.location.href=`{{ url_for('main.user_administrator') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-user-administrator.svg') }}"
-                alt="{{ translations.alt_user_administrator }}">
-            <span>{{ translations.title_user_administrator | upper }}</span>
-        </div>
-        <div onclick="window.location.href=`{{ url_for('main.suggestion_mailbox') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-suggestion-mailbox.svg') }}"
-                alt="{{ translations.alt_suggestion_mailbox }}">
-            <span>{{ translations.title_suggestion_mailbox | upper }}</span>
-        </div>
-        {% endif %}
-
-        <div onclick="window.location.href=`{{ url_for('main.suggestion_box') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-suggestion-box.svg') }}"
-                alt="{{ translations.alt_suggestion_box }}">
-            <span>{{ translations.title_suggestion_box | upper }}</span>
-        </div>
-        {% endif %}
-        <div onclick="window.location.href=`{{ url_for('main.dashboard_screen') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-dashboard-screen.svg') }}"
-                alt="{{ translations.alt_dashboard_screen }}">
-            <span>{{ translations.title_dashboard_screen | upper }}</span>
-        </div>
-    </div>
-
-    <div class="sidebar-divider"></div>
-
-    <div class="sidebar-section-header">{{ translations.sidebar_user_section | upper }}</div>
-    <div class="sidebar-actions-wrapper">
-        {% if session.user_id %}
-        <div onclick="window.location.href=`{{ url_for('main.profile') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-user.svg') }}"
-                alt="{{ translations.alt_user_profile }}">
-            <span>{{ (session.full_name or '') | upper }}</span>
-        </div>
-        <div onclick="window.location.href=`{{ url_for('auth.logout_user') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-logout.svg') }}"
-                alt="{{ translations.alt_logout }}">
-            <span>{{ translations.title_logout | upper }}</span>
-        </div>
-        {% else %}
-        <div onclick="window.location.href=`{{ url_for('main.login') }}`" class="sidebar-option">
-            <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-login.svg') }}"
-                alt="{{ translations.alt_login }}">
-            <span>{{ translations.title_login | upper }}</span>
-        </div>
-        {% endif %}
-    </div>
 
     <div id="mobile-actions-container" class="hidden"></div>
 </div>

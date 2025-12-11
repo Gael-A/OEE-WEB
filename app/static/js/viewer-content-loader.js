@@ -124,6 +124,7 @@ async function loadCurrentReport(formData) {
             if (creatorElement && data.report_header.created_by_name) {
                 creatorElement.textContent = `${window.translations.reported_by}: ${data.report_header.created_by_name}`;
             }
+            return Number(data.report_header.id);
         } else {
             container.innerHTML = `<p class="no-data-message">${window.translations.no_active_report}</p>`;
         }
@@ -142,7 +143,11 @@ async function loadHistoryReports(formData) {
         const reports = await response.json();
         container.innerHTML = '';
         if (reports && reports.length > 0) {
+            let first_daily_id = null;
             for (const report of reports) {
+                if (!first_daily_id) {
+                    first_daily_id = report.id;
+                }
                 const reportContainer = document.createElement('div');
                 reportContainer.className = 'report-instance';
                 container.appendChild(reportContainer);
@@ -150,6 +155,7 @@ async function loadHistoryReports(formData) {
                 const reportDetails = await detailResponse.json();
                 renderReport({ report_header: report, hourly_rows: reportDetails.rows }, reportContainer);
             }
+            return first_daily_id;
         } else {
             container.innerHTML = `<p class="no-data-message">${window.translations.no_history_reports_found}</p>`;
         }
@@ -203,7 +209,117 @@ async function loadMachines(formData) {
     }
 }
 
-export function handleInitialLoad(state) {
+async function loadDailyStartInfo(dailyId) {
+    try {
+        const responseStartShift = await fetch(`/get-shift-start-report?daily_id=${dailyId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const dataStartShift = await responseStartShift.json().catch(() => ({}));
+
+        if (responseStartShift.status === 404) {
+            document.querySelector('.start-report-table tbody').style.display = 'none';
+            return; 
+        }
+
+        if (!responseStartShift.ok) {
+            console.error("Error al obtener reporte:", dataStartShift.error);
+            return;
+        }
+
+        const report = dataStartShift.report;
+
+        console.log("Shift Start Report:", report);
+
+        document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
+
+        const el = {
+            hour: document.getElementById('first_piece_at_hour'),
+            minute: document.getElementById('first_piece_at_minute'),
+            meridiem: document.getElementById('first_piece_at_meridiem'),
+            comment: document.getElementById('first_piece_comment'),
+
+            noOpStart: document.getElementById('no_op_start'),
+            noOpBalancing: document.getElementById('no_op_balancing'),
+            noOpBalancingComment: document.getElementById('no_op_balancing_comment'),
+
+            isLineWet: document.getElementById('is_line_wet'),
+            lineWetComment: document.getElementById('line_wet_comment')
+        };
+
+        let [firstHour = '', firstMinute = ''] = (report.first_piece_at || '00:00').split(':');
+
+        let meridiem = firstHour > 12 ? "PM" : "AM";
+        if (firstHour > 12) {
+            firstHour = String(firstHour - 12).padStart(2, '0');
+        }
+
+        // Asignación de valores
+        el.hour.value = firstHour;
+        el.minute.value = firstMinute;
+        el.meridiem.value = meridiem;
+
+        el.comment.value = report.first_piece_comment || "";
+
+        el.noOpStart.value = report.no_op_start || "";
+        el.noOpBalancing.value = report.no_op_balancing || "";
+        el.noOpBalancingComment.value = report.no_op_comment || "";
+
+        el.isLineWet.selectedIndex = report.is_line_wet;
+        el.lineWetComment.value = report.is_line_wet_comment || "";
+
+        [
+            el.hour, el.minute, el.meridiem,
+            el.noOpStart, el.noOpBalancing,
+            el.isLineWet
+        ].forEach(input => {
+            input.classList.add('initial-loaded');
+            input.dispatchEvent(new Event('change'));
+            input.classList.remove('initial-loaded');
+        });
+
+    } catch (error) {
+        console.error("Error en fetch:", error);
+    }
+}
+
+async function getPanSettings(pan) {
+    const operatingMachinesSection = document.querySelectorAll('.operating-machines-section');
+    const dailyStartSection = document.querySelectorAll('.daily-start-section');
+
+    try {
+        const responseSettings = await fetch(`/pan-settings/${pan}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const dataSettings = await responseSettings.json().catch(() => ({}));
+
+        if (!responseSettings.ok) {
+            showToast(dataSettings.error || window.translations.error_loading_pan_settings, false);
+            operatingMachinesSection.forEach(section => section.classList.add('hidden'));
+            dailyStartSection.forEach(section => section.classList.add('hidden'));
+            return;
+        }
+
+        if (dataSettings.has_machines_in_system) {
+            operatingMachinesSection.forEach(section => section.classList.remove('hidden'));
+        } else {
+            operatingMachinesSection.forEach(section => section.classList.add('hidden'));
+        }
+
+        if (dataSettings.need_daily_start_info) {
+            dailyStartSection.forEach(section => section.classList.remove('hidden'));
+        } else {
+            dailyStartSection.forEach(section => section.classList.add('hidden'));
+        }
+    } catch (error) {
+        console.error("Error al obtener la configuración del PAN:", error);
+        showToast(window.translations.error_loading_pan_settings, false);
+    }
+}
+
+export async function handleInitialLoad(state) {
     const currentReportWrapper = document.getElementById('current-report-wrapper');
     const machinesTitle = document.getElementById('machines-section-title');
     const mode = state.modeAction.getAttribute("mode");
@@ -212,37 +328,58 @@ export function handleInitialLoad(state) {
     if (mode === 'current') {
         currentReportWrapper?.classList.remove('hidden');
         if (machinesTitle) machinesTitle.textContent = window.translations.viewer_machines_operating_now;
-        loadCurrentReport(dataToLoad);
+        const dailyId = await loadHistoryReports(dataToLoad);
+        if (dailyId) {
+            await loadDailyStartInfo(dailyId);
+        } else {
+            dailyId = await loadCurrentReport(dataToLoad);
+            if (dailyId) {
+                await loadDailyStartInfo(dailyId);
+            }
+        }
+        loadHistoryReports(dataToLoad);
     } else {
         currentReportWrapper?.classList.add('hidden');
         if (machinesTitle) machinesTitle.textContent = window.translations.viewer_last_machines_operating;
+        const dailyId = await loadHistoryReports(dataToLoad);
+        if (dailyId) {
+            await loadDailyStartInfo(dailyId);
+        }
     }
-    loadHistoryReports(dataToLoad);
     loadDailyResults(dataToLoad);
     loadMachines(dataToLoad);
+    getPanSettings(dataToLoad.pan);
 }
 
-export function handlePastModeUpdate(state) {
+export async function handlePastModeUpdate(state) {
     document.getElementById('current-report-wrapper')?.classList.add('hidden');
     const machinesTitle = document.getElementById('machines-section-title');
     if (machinesTitle) machinesTitle.textContent = window.translations.viewer_last_machines_operating;
-    loadHistoryReports(state.formData);
+    const dailyId = await loadHistoryReports(state.formData);
+    if (dailyId) {
+        await loadDailyStartInfo(dailyId);
+    }
     loadDailyResults(state.formData);
     loadMachines(state.formData);
+    getPanSettings(state.formData.pan);
     document.getElementById('mode-action')?.classList.remove("outdated");
     const query = new URLSearchParams(state.formData).toString();
     const newUrl = `${window.location.pathname}?${query}`;
     history.replaceState(null, '', newUrl);
 }
 
-export function handleCurrentModeUpdate(state) {
+export async function handleCurrentModeUpdate(state) {
     document.getElementById('current-report-wrapper')?.classList.remove('hidden');
     const machinesTitle = document.getElementById('machines-section-title');
     if (machinesTitle) machinesTitle.textContent = window.translations.viewer_machines_operating_now;
-    loadCurrentReport(state.currentFormData);
+    const dailyId = await loadCurrentReport(state.currentFormData);
+    if (dailyId) {
+        await loadDailyStartInfo(dailyId);
+    }
     loadHistoryReports(state.currentFormData);
     loadDailyResults(state.currentFormData);
     loadMachines(state.currentFormData);
+    getPanSettings(state.currentFormData.pan);
     document.getElementById('mode-action')?.classList.remove("outdated");
     const query = new URLSearchParams(state.currentFormData).toString();
     const newUrl = `${window.location.pathname}?${query}`;
