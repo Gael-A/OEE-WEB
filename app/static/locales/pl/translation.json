@@ -141,7 +141,7 @@
   "profile_update_error_email_in_use": "Adres e-mail jest już używany przez inne konto.",
   "profile_update_error_generic": "Wystąpił błąd podczas aktualizacji profilu.",
   "profile_update_error_password": "Podane hasło jest nieprawidłowe.",
-  "profile_update_prompt_password": "Aby zapisać zmiany, wprowadź swoje obecne hasło:",
+  "profile_update_prompt_password": "Aby zapisać zmiany, wprowadź swoje obecne hasło.",
   "profile_update_success": "Profil zaktualizowany pomyślnie.",
   "title_user_profile_page": "Profil użytkownika - ILC Dover",
   "register_already_have_account": "Masz już konto? Zaloguj się",
@@ -336,5 +336,33 @@
   "error_loading_pan_settings": "Błąd ładowania ustawień PAN.",
   "report_start_title": "RAPORT ROZPOCZĘCIA ZMIANY",
   "alt_ranker": "Ranker",
-  "title_ranker": "PLAN PRODUKCJI"
+  "title_ranker": "PLAN PRODUKCJI",
+
+  "priorities_comment": "PRIORYTETY",
+  "priorities_array": [
+    "1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9.", "10.",
+    "11.", "12.", "13.", "14.", "15.", "16.", "17.", "18.", "19.", "20.",
+    "21.", "22.", "23.", "24.", "25.", "26.", "27.", "28.", "29.", "30."
+  ],
+  "priority_ordinal_suffix": ".",
+  "add_job_error": "Błąd podczas dodawania zadania.",
+  "add_job_success": "Zlecenie pracy dodane pomyślnie.",
+  "delete_job_title": "Usuń zlecenie pracy z planu produkcyjnego",
+  "delete_alt": "Usuń",
+  "delete_completed_job_title": "Usuń zlecenie pracy",
+  "delete_job_confirm_text": "Czy na pewno chcesz usunąć to zadanie? Tej akcji nie można cofnąć.",
+  "delete_job_confirm_title": "Potwierdź usunięcie",
+  "delete_job_error": "Błąd podczas usuwania zadania.",
+  "delete_job_success": "Zadanie usunięte pomyślnie.",
+  "mark_job_complete_confirm_text": "Bieżąca ilość jest większa lub równa wymaganej ilości. Czy chcesz oznaczyć to zadanie jako ukończone?",
+  "mark_job_complete_confirm_title": "Oznacz jako ukończone",
+  "load_jobs_error": "Błąd podczas ładowania zadań.",
+  "load_completed_jobs_error": "Błąd podczas ładowania ukończonych zadań.",
+  "update_job_data_error": "Błąd podczas aktualizacji danych zadania.",
+  "update_job_priority_error": "Błąd podczas aktualizacji priorytetu zadania.",
+  "job_marked_completed": "Zadanie oznaczone jako ukończone.",
+  "jobs_loaded": "Zadania załadowane.",
+  "completed_jobs_loaded": "Ukończone zadania załadowane.",
+  "job_data_updated_success": "Dane zadania zaktualizowane pomyślnie.",
+  "job_priority_updated_success": "Priorytet zadania zaktualizowany pomyślnie."
 }

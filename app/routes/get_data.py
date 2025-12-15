@@ -968,11 +968,13 @@ def hourly_cycles():
             cursor.execute(
                 """
                 SELECT counter FROM logged_data
-                WHERE pan_id = %s AND node_id = %s AND time <= %s AND counter IS NOT NULL
+                WHERE pan_id = %s AND node_id = %s 
+                AND time >= %s AND time <= %s 
+                AND counter IS NOT NULL
                 ORDER BY time DESC
                 LIMIT 1
                 """,
-                (pan_id, node_id, hour_end),
+                (pan_id, node_id, start, hour_end),
             )
             row = cursor.fetchone()
             current_count = row["counter"] if row else last_count

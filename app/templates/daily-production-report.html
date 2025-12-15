@@ -23,12 +23,10 @@
 <body>
 
     {% set nav_items = [
-    { 'id': 'header', 'icon': 'svg/icon-info.svg', 'alt_text': translations.alt_header, 'label':
-    translations.nav_header},
-    { 'id': 'body', 'icon': 'svg/icon-hour-per-hour.svg', 'alt_text': translations.alt_hourly_report, 'label':
-    translations.hourly_report },
-    { 'id': 'machines', 'icon': 'svg/icon-machine.svg', 'alt_text': translations.alt_operating_machines, 'label':
-    translations.operating_machines }
+    { 'id': 'header', 'icon': 'svg/icon-info.svg', 'alt_text': translations.alt_header, 'label': translations.nav_header},
+    { 'id': 'body', 'icon': 'svg/icon-start.svg', 'alt_text': "!alt_text", 'label': '!' + (translations.report_start_title | upper), "class": 'daily-start-section' },
+    { 'id': 'body', 'icon': 'svg/icon-hour-per-hour.svg', 'alt_text': translations.alt_hourly_report, 'label': translations.hourly_report },
+    { 'id': 'machines', 'icon': 'svg/icon-machine.svg', 'alt_text': translations.alt_operating_machines, 'label': translations.operating_machines, "class": 'operating-machines-section' }
     ] %}
 
     {% set show_mode_toggle = session.get('role') == 'admin' and false %}
@@ -110,7 +108,7 @@
                                 </div>
                                 <label for="first_piece_at_hour">!Hora que salio la primer pieza</label>
                             </td>
-                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="first_piece_comment"></td>
+                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="first_piece_comment" list="incident-suggestions"></td>
                         </tr>
                         <tr>
                             <td data-label="">
@@ -120,7 +118,7 @@
                                 </select>
                                 <label for="is_line_wet">!¿La linea estaba mojada?</label> 
                             </td>
-                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="line_wet_comment" class="negative"></td>
+                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="line_wet_comment" class="negative" list="incident-suggestions"></td>
                         </tr>
                         <tr>
                             <td data-label="">
@@ -131,7 +129,7 @@
                                 </div>
                                 <label for="no_op_start">!Operadores en linea vs en balanceo</label>
                             </td>
-                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="no_op_balancing_comment"></td>
+                            <td data-label="!Comentarios" style="display: block;"><input type="text" id="no_op_balancing_comment" list="incident-suggestions"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -228,7 +226,7 @@
     <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/machines.js') }}" data-interactive="true"></script>
-    <script src="{{ url_for('static', filename='js/daily-report-func.js' ) }}"></script>
+    <script src="{{ url_for('static', filename='js/daily-report-func.js' ) }}" type="module"></script>
     <script src="{{ url_for('static', filename='js/daily-report-attempt.js' ) }}"></script>
     <script src="{{ url_for('static', filename='js/input-validation.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>

@@ -336,5 +336,33 @@
   "error_loading_pan_settings": "Error al cargar la configuración del PAN.",
   "report_start_title": "REPORTE INICIO DE TURNO",
   "alt_ranker": "Ranker",
-  "title_ranker": "PLAN DE PRODUCCIÓN"
+  "title_ranker": "PLAN DE PRODUCCIÓN",
+
+  "priorities_comment": "PRIORIDADES",
+  "priorities_array": [
+    "1era", "2da", "3era", "4ta", "5ta", "6ta", "7ma", "8va", "9na", "10ma",
+    "11va", "12va", "13ra", "14ta", "15ta", "16ta", "17ma", "18va", "19na", "20ma",
+    "21va", "22va", "23ra", "24ta", "25ta", "26ta", "27ma", "28va", "29na", "30ma"
+  ],
+  "priority_ordinal_suffix": "era",
+  "add_job_error": "Error al agregar el trabajo.",
+  "add_job_success": "Orden de trabajo agregado exitosamente.",
+  "delete_job_title": "Eliminar Job Order del plan de producción",
+  "delete_alt": "Eliminar",
+  "delete_completed_job_title": "Eliminar Job Order",
+  "delete_job_confirm_text": "¿Estás seguro de que deseas eliminar este trabajo? Esta acción no se puede deshacer.",
+  "delete_job_confirm_title": "Confirmar eliminación",
+  "delete_job_error": "Error al eliminar el trabajo.",
+  "delete_job_success": "Trabajo eliminado exitosamente.",
+  "mark_job_complete_confirm_text": "La cantidad actual es mayor o igual a la cantidad requerida. ¿Deseas marcar este job como completado?",
+  "mark_job_complete_confirm_title": "Marcar como completado",
+  "load_jobs_error": "Error al cargar trabajos.",
+  "load_completed_jobs_error": "Error al cargar trabajos completados.",
+  "update_job_data_error": "Error al actualizar los datos del trabajo.",
+  "update_job_priority_error": "Error al actualizar la prioridad del trabajo.",
+  "job_marked_completed": "Job marcado como completado.",
+  "jobs_loaded": "Jobs cargados.",
+  "completed_jobs_loaded": "Jobs completados cargados.",
+  "job_data_updated_success": "Datos del trabajo actualizados exitosamente.",
+  "job_priority_updated_success": "Prioridad del trabajo actualizada exitosamente."
 }

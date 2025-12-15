@@ -26,7 +26,7 @@
     {% endif %}
 
     <script src="{{ url_for('static', filename='js/module-timeline.js') }}" session-role="{{ session.get('role') }}"></script>
-    <script src="{{ url_for('static', filename='js/module-barchart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/module-barchart.js') }}" type="module"></script>
     <script src="{{ url_for('static', filename='js/module-linechart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/module-status.js') }}"></script>
     <script src="{{ url_for('static', filename='js/module-numerical-data.js') }}"></script>

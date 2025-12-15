@@ -61,3 +61,30 @@ export function getShiftInfo(shift) {
         default: return { number: '-', timeRange: 'N/A' };
     }
 }
+
+export function getShiftStart(shift, format) {
+    switch (String(shift)) {
+        case '1': return format ? '06:30' : { hours: 6, minutes: 30 };
+        case '2': return format ? '16:20' : { hours: 16, minutes: 20 };
+        case '3': return format ? '00:40' : { hours: 0, minutes: 40 };
+        default: return format ? '--:--' : null;
+    }
+}
+
+export function getShiftEnd(shift, format) {
+    switch (String(shift)) {
+        case '1': return format ? '16:00' : { hours: 16, minutes: 0 };
+        case '2': return format ? '00:20' : { hours: 0, minutes: 20 };
+        case '3': return format ? '06:00' : { hours: 6, minutes: 0 };
+        default: return format ? '--:--' : null;
+    }
+}
+
+export function getShiftFirstPieceAt(shift, format = true) {
+    switch (String(shift)) {
+        case '1': return format ? '06:45' : { hours: 6, minutes: 45 };
+        case '2': return format ? '16:35' : { hours: 16, minutes: 35 };
+        case '3': return format ? '00:55' : { hours: 0, minutes: 55 };
+        default: return format ? '--:--' : null;
+    }
+}

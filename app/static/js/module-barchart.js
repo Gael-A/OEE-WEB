@@ -1,3 +1,5 @@
+import { getShiftStart } from './modules/shift-schedules.js';
+
 window.renderBarChart = async function (pan, shift, date, attribute, unit = '', max = 100, machineStatus = {}, selector = null, target = null) {
     const containerId = selector ? `chart-body-${selector}-${pan}-${attribute}` : `chart-body-${pan}-${attribute}`;
     const chartBody = document.getElementById(containerId);
@@ -192,7 +194,7 @@ window.renderBarChart = async function (pan, shift, date, attribute, unit = '', 
 
             // bar.appendChild(tooltip);
 
-            // 🔽 Agrega línea de meta si hay target válido
+            // Agrega línea de meta si hay target válido
             if (!isNaN(targetValue) && chartMax > 0) {
                 const line = document.createElement('div');
                 line.classList.add('target-line');

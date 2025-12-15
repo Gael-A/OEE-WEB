@@ -186,7 +186,7 @@
     <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/machines.js') }}" data-interactive="false"></script>
-    <script src="{{ url_for('static', filename='js/daily-report-func.js' ) }}"></script>
+    <script src="{{ url_for('static', filename='js/daily-report-func.js' ) }}" type="module"></script>
     <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
     <script>
         window.machines = {{ machines | tojson }};

@@ -1,3 +1,5 @@
+import { getShiftFirstPieceAt } from './modules/shift-schedules.js';
+
 let noOpInput;
 let noOpStartInput;
 let noOpBalancingInput;
@@ -14,7 +16,38 @@ let firstPieceAtMeridiem;
 
 let isLineWet;
 
-document.addEventListener('DOMContentLoaded', function() {
+// -------------------------------------------------------------
+// ESPERA CORRECTA PARA OBTENER SHIFT (PROMISE + CACHE)
+// -------------------------------------------------------------
+let cachedShiftFirstPiece = null;
+
+function waitForShiftFirstPiece() {
+    if (cachedShiftFirstPiece) {
+        return Promise.resolve(cachedShiftFirstPiece);
+    }
+
+    return new Promise(resolve => {
+        const check = () => {
+            if (window.filters?.shift) {
+                cachedShiftFirstPiece = getShiftFirstPieceAt(window.filters.shift, false);
+                resolve(cachedShiftFirstPiece);
+                return true;
+            }
+            return false;
+        };
+
+        if (check()) return;
+
+        const interval = setInterval(() => {
+            if (check()) clearInterval(interval);
+        }, 100);
+    });
+}
+
+// -------------------------------------------------------------
+// DOM READY
+// -------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', function () {
     noOpInput = document.getElementById('no_op');
     noOpStartInput = document.getElementById('no_op_start');
     noOpBalancingInput = document.getElementById('no_op_balancing');
@@ -24,16 +57,17 @@ document.addEventListener('DOMContentLoaded', function() {
     noOpBalancingComment = document.getElementById('no_op_balancing_comment');
 
     closeButton = document.getElementById('close-start-report-button');
-    
-    firstPieceAtHour = document.getElementById('first_piece_at_hour'); 
-    firstPieceAtMinute = document.getElementById('first_piece_at_minute'); 
+
+    firstPieceAtHour = document.getElementById('first_piece_at_hour');
+    firstPieceAtMinute = document.getElementById('first_piece_at_minute');
     firstPieceAtMeridiem = document.getElementById('first_piece_at_meridiem');
 
     isLineWet = document.getElementById('is_line_wet');
 
+    console.log('Daily Report Func JS loaded');
 
     // -------------------------------------------------------------
-    // EVENT LISTENERS PARA NO OP
+    // NO OP
     // -------------------------------------------------------------
     if (noOpInput && noOpStartInput) {
         noOpInput.addEventListener('input', function () {
@@ -61,21 +95,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const bal = Number(noOpBalancingInput.value);
 
         if (start < bal || start <= 0) {
-            noOpStartInput.classList.add("negative");
-            noOpBalancingComment.classList.add("negative");
+            noOpStartInput.classList.add('negative');
+            noOpBalancingComment.classList.add('negative');
 
-            // Recuperar valor anterior si existía
             if (!noOpStartInput.classList.contains('initial-loaded') && !noOpBalancingInput.classList.contains('initial-loaded')) {
                 noOpBalancingComment.value = noOpBalancingComment.dataset.previousValue || '';
                 noOpBalancingComment.dataset.previousValue = '';
             }
         } else {
-            noOpStartInput.classList.remove("negative");
-            noOpBalancingComment.classList.remove("negative");
+            noOpStartInput.classList.remove('negative');
+            noOpBalancingComment.classList.remove('negative');
 
-            // Guarda valor antes de reemplazarlo
             if (!noOpStartInput.classList.contains('initial-loaded') && !noOpBalancingInput.classList.contains('initial-loaded')) {
-                if (noOpBalancingComment.value != 'OK') {
+                if (noOpBalancingComment.value !== 'OK') {
                     noOpBalancingComment.dataset.previousValue = noOpBalancingComment.value;
                 }
                 noOpBalancingComment.value = 'OK';
@@ -84,45 +116,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // -------------------------------------------------------------
-    // EVENT LISTENERS PARA FIRST PIECE TIME
+    // FIRST PIECE TIME (CORREGIDO)
     // -------------------------------------------------------------
     if (firstPieceAtHour && firstPieceAtMinute && firstPieceAtMeridiem) {
 
-        function checkTimeAndApplyNegativeClass() {
+        async function checkTimeAndApplyNegativeClass() {
             const hour12 = parseInt(firstPieceAtHour.value, 10) || 0;
             const minute = parseInt(firstPieceAtMinute.value, 10) || 0;
             const meridiem = firstPieceAtMeridiem.value;
 
             let hour24 = hour12;
-            
-            if (meridiem === 'PM' && hour12 !== 12) hour24 = hour12 + 12;
+            if (meridiem === 'PM' && hour12 !== 12) hour24 += 12;
             else if (meridiem === 'AM' && hour12 === 12) hour24 = 0;
 
-            const COMPARISON_HOUR = 6;
-            const COMPARISON_MINUTE = 45;
+            const { hours: comparison_hour, minutes: comparison_minute } = await waitForShiftFirstPiece();
 
-            if (hour24 > COMPARISON_HOUR || (hour24 === COMPARISON_HOUR && minute > COMPARISON_MINUTE)) {
-                firstPieceAtHour.classList.add("negative");
-                firstPieceAtMinute.classList.add("negative");
-                firstPieceComment.classList.add("negative");
+            const isAfterShift =
+                hour24 > comparison_hour ||
+                (hour24 === comparison_hour && minute > comparison_minute);
 
-                if (!firstPieceAtHour.classList.contains('initial-loaded') && !firstPieceAtMinute.classList.contains('initial-loaded') && !firstPieceAtMeridiem.classList.contains('initial-loaded')) {
+            if (isAfterShift) {
+                firstPieceAtHour.classList.add('negative');
+                firstPieceAtMinute.classList.add('negative');
+                firstPieceComment.classList.add('negative');
+
+                if (!firstPieceAtHour.classList.contains('initial-loaded') &&
+                    !firstPieceAtMinute.classList.contains('initial-loaded') &&
+                    !firstPieceAtMeridiem.classList.contains('initial-loaded')) {
                     firstPieceComment.value = firstPieceComment.dataset.previousValue || '';
                     firstPieceComment.dataset.previousValue = '';
                 }
             } else {
-                firstPieceAtHour.classList.remove("negative");
-                firstPieceAtMinute.classList.remove("negative");
-                firstPieceComment.classList.remove("negative");
+                firstPieceAtHour.classList.remove('negative');
+                firstPieceAtMinute.classList.remove('negative');
+                firstPieceComment.classList.remove('negative');
 
-                if (!firstPieceAtHour.classList.contains('initial-loaded') && !firstPieceAtMinute.classList.contains('initial-loaded') && !firstPieceAtMeridiem.classList.contains('initial-loaded')) {
+                if (!firstPieceAtHour.classList.contains('initial-loaded') &&
+                    !firstPieceAtMinute.classList.contains('initial-loaded') &&
+                    !firstPieceAtMeridiem.classList.contains('initial-loaded')) {
                     firstPieceComment.dataset.previousValue = firstPieceComment.value;
                     firstPieceComment.value = 'OK';
-                }    
+                }
             }
         }
 
-        // Listeners
         [firstPieceAtHour, firstPieceAtMinute, firstPieceAtMeridiem].forEach(input => {
             input.addEventListener('input', () => {
                 checkTimeAndApplyNegativeClass();
@@ -134,38 +171,37 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Validación límite de hora
-        firstPieceAtHour.addEventListener('input', function() {
+        firstPieceAtHour.addEventListener('input', function () {
             let value = parseInt(this.value, 10);
             if (value > 12) this.value = 12;
             if (value <= 0 || isNaN(value)) this.value = '';
         });
 
-        // Validación límite de minutos
-        firstPieceAtMinute.addEventListener('input', function() {
+        firstPieceAtMinute.addEventListener('input', function () {
             let value = parseInt(this.value, 10);
             if (value > 59) this.value = 59;
-            if (value <= 0 || isNaN(value)) this.value = '';
+            if (value < 0 || isNaN(value)) this.value = '';
         });
 
         checkTimeAndApplyNegativeClass();
     }
 
     // -------------------------------------------------------------
-    // EVENT LISTENER PARA IS LINE WET
+    // IS LINE WET
     // -------------------------------------------------------------
-    isLineWet.addEventListener('change', function() {
-        if (isLineWet.value === "0") {
-            isLineWet.classList.add("negative");
-            lineWetComment.classList.add("negative");
+    isLineWet.addEventListener('change', function () {
+        if (isLineWet.value === '0') {
+            isLineWet.classList.add('negative');
+            lineWetComment.classList.add('negative');
 
             if (!isLineWet.classList.contains('initial-loaded')) {
                 lineWetComment.value = lineWetComment.dataset.previousValue || '';
                 lineWetComment.dataset.previousValue = '';
             }
         } else {
-            isLineWet.classList.remove("negative");
-            lineWetComment.classList.remove("negative");
+            isLineWet.classList.remove('negative');
+            lineWetComment.classList.remove('negative');
+
             if (!isLineWet.classList.contains('initial-loaded')) {
                 lineWetComment.dataset.previousValue = lineWetComment.value;
                 lineWetComment.value = 'OK';
@@ -175,18 +211,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // -------------------------------------------------------------
-    // EVENT LISTENERS PARA COMENTARIOS
+    // COMENTARIOS
     // -------------------------------------------------------------
     [firstPieceComment, lineWetComment, noOpBalancingComment].forEach(commentInput => {
         commentInput.addEventListener('input', checkIfAllInputsAreFilled);
     });
 
     // -------------------------------------------------------------
-    // FUNCIÓN PARA HABILITAR/DESHABILITAR EL BOTÓN
+    // BOTÓN FINAL
     // -------------------------------------------------------------
     function checkIfAllInputsAreFilled() {
-
-        // SOLO inputs que el usuario realmente llena
         const inputsToCheck = [
             noOpInput,
             noOpStartInput,
@@ -200,21 +234,16 @@ document.addEventListener('DOMContentLoaded', function() {
             noOpBalancingComment
         ];
 
-        // Si cualquiera está vacío → botón deshabilitado
         const allFilled = inputsToCheck.every(input => input && input.value.trim() !== '');
 
         if (closeButton) {
-            if (allFilled) {
-                closeButton.classList.remove('disabled');
-            } else {
-                closeButton.classList.add('disabled');
-            }
+            closeButton.classList.toggle('disabled', !allFilled);
         }
     }
 
     if (closeButton) {
-        closeButton.addEventListener('click', function() {
-            checkIfAllInputsAreFilled()
+        closeButton.addEventListener('click', function () {
+            checkIfAllInputsAreFilled();
 
             if (this.classList.contains('disabled')) {
                 showToast('Please fill in all required fields before closing the report.', false);
@@ -224,6 +253,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Inicializar
     checkIfAllInputsAreFilled();
 });

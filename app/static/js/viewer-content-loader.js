@@ -10,7 +10,7 @@ function renderReport(reportData, container) {
     container.innerHTML = '';
 
     const headerWrapper = document.createElement('div');
-    headerWrapper.className = 'header-report';
+    headerWrapper.className = 'header-report snap-section';
     const headerTable = document.createElement('table');
     headerTable.className = 'header-report-table viewer';
     headerTable.innerHTML = `
@@ -276,6 +276,7 @@ async function loadDailyStartInfo(dailyId) {
         ].forEach(input => {
             input.classList.add('initial-loaded');
             input.dispatchEvent(new Event('change'));
+            input.dispatchEvent(new Event('input'));
             input.classList.remove('initial-loaded');
         });
 
@@ -331,13 +332,13 @@ export async function handleInitialLoad(state) {
         const dailyId = await loadHistoryReports(dataToLoad);
         if (dailyId) {
             await loadDailyStartInfo(dailyId);
+            loadCurrentReport(dataToLoad);
         } else {
             dailyId = await loadCurrentReport(dataToLoad);
             if (dailyId) {
                 await loadDailyStartInfo(dailyId);
             }
         }
-        loadHistoryReports(dataToLoad);
     } else {
         currentReportWrapper?.classList.add('hidden');
         if (machinesTitle) machinesTitle.textContent = window.translations.viewer_last_machines_operating;
@@ -372,11 +373,16 @@ export async function handleCurrentModeUpdate(state) {
     document.getElementById('current-report-wrapper')?.classList.remove('hidden');
     const machinesTitle = document.getElementById('machines-section-title');
     if (machinesTitle) machinesTitle.textContent = window.translations.viewer_machines_operating_now;
-    const dailyId = await loadCurrentReport(state.currentFormData);
+    const dailyId = await loadHistoryReports(state.currentFormData);
     if (dailyId) {
         await loadDailyStartInfo(dailyId);
+        loadCurrentReport(state.currentFormData);
+    } else {
+        dailyId = await loadCurrentReport(state.currentFormData);
+        if (dailyId) {
+            await loadDailyStartInfo(dailyId);
+        }
     }
-    loadHistoryReports(state.currentFormData);
     loadDailyResults(state.currentFormData);
     loadMachines(state.currentFormData);
     getPanSettings(state.currentFormData.pan);

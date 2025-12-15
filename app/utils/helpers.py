@@ -409,9 +409,12 @@ def process_machine_logs_to_blocks(logs, working_logs, machine_id, start, end):
     if working_logs and working_logs[0]["is_on"] == 0:
         current_is_on_state = 0
 
+    logs = sorted(logs, key=lambda x: x["time"])
+    
     for r in logs:
         ts_dt = r["time"]
         ts_str = ts_dt.strftime("%Y-%m-%d %H:%M:%S")
+        working_logs = sorted(working_logs, key=lambda x: x["changed_at"])
         while working_logs and working_logs[0]["changed_at"] <= ts_dt:
             current_is_on_state = working_logs.pop(0)["is_on"]
 

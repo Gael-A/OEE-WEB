@@ -783,85 +783,89 @@ const DailyReportController = (function () {
             try {
                 const dailyId = state.dailyReportId || data.report_header.id;
 
-                const responseStartShift = await fetch(`/get-shift-start-report?daily_id=${dailyId}`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
+                if (dailyId) {
 
-                if (responseStartShift.status === 404) {
-                    document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
-                    document.getElementById('close-start-report-button').classList.remove('hidden');
-                    console.log("No existe reporte de inicio de turno.");
-                } else {
-                    const dataStartShift = await responseStartShift.json().catch(() => ({}));
-                    
-                    if (!responseStartShift.ok) {
-                        console.error("Error al obtener reporte:", dataStartShift.error);
-                        return;
-                    }
-
-                    // Si existe el reporte
-                    const report = dataStartShift.report;
-
-                    console.log("Shift Start Report:", report);
-
-                    // Aquí ya puedes colocar los valores en los campos si lo deseas:
-                    document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
-                    document.getElementById('close-start-report-button').classList.add('hidden');
-
-                    // Agrupamos todos los elementos que vamos a usar
-                    const el = {
-                        hour: document.getElementById('first_piece_at_hour'),
-                        minute: document.getElementById('first_piece_at_minute'),
-                        meridiem: document.getElementById('first_piece_at_meridiem'),
-                        comment: document.getElementById('first_piece_comment'),
-
-                        noOpStart: document.getElementById('no_op_start'),
-                        noOpBalancing: document.getElementById('no_op_balancing'),
-                        noOpBalancingComment: document.getElementById('no_op_balancing_comment'),
-
-                        isLineWet: document.getElementById('is_line_wet'),
-                        lineWetComment: document.getElementById('line_wet_comment')
-                    };
-
-                    // Deshabilitar inputs en bloque
-                    [
-                        el.hour, el.minute, el.meridiem, el.comment,
-                        el.noOpStart, el.noOpBalancing, el.noOpBalancingComment,
-                        el.isLineWet, el.lineWetComment
-                    ].forEach(input => input.disabled = true);
-
-                    // Parseo de hora
-                    let [firstHour = '', firstMinute = ''] = (report.first_piece_at || '00:00').split(':');
-
-                    let meridiem = firstHour > 12 ? "PM" : "AM";
-                    if (firstHour > 12) {
-                        firstHour = String(firstHour - 12).padStart(2, '0');
-                    }
-
-                    // Asignación de valores
-                    el.hour.value = firstHour;
-                    el.minute.value = firstMinute;
-                    el.meridiem.value = meridiem;
-
-                    el.comment.value = report.first_piece_comment || "";
-
-                    el.noOpStart.value = report.no_op_start || "";
-                    el.noOpBalancing.value = report.no_op_balancing || "";
-                    el.noOpBalancingComment.value = report.no_op_comment || "";
-
-                    el.isLineWet.selectedIndex = report.is_line_wet;
-                    el.lineWetComment.value = report.is_line_wet_comment || "";
-
-                    [
-                        el.hour, el.minute, el.meridiem,
-                        el.noOpStart, el.noOpBalancing,
-                        el.isLineWet
-                    ].forEach(input => {
-                        input.classList.add('initial-loaded');
-                        input.dispatchEvent(new Event('change'));
-                        input.classList.remove('initial-loaded');
+                    const responseStartShift = await fetch(`/get-shift-start-report?daily_id=${dailyId}`, {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
                     });
+
+                    if (responseStartShift.status === 404) {
+                        document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
+                        document.getElementById('close-start-report-button').classList.remove('hidden');
+                        console.log("No existe reporte de inicio de turno.");
+                    } else {
+                        const dataStartShift = await responseStartShift.json().catch(() => ({}));
+                        
+                        if (!responseStartShift.ok) {
+                            console.error("Error al obtener reporte:", dataStartShift.error);
+                            return;
+                        }
+
+                        // Si existe el reporte
+                        const report = dataStartShift.report;
+
+                        console.log("Shift Start Report:", report);
+
+                        // Aquí ya puedes colocar los valores en los campos si lo deseas:
+                        document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
+                        document.getElementById('close-start-report-button').classList.add('hidden');
+
+                        // Agrupamos todos los elementos que vamos a usar
+                        const el = {
+                            hour: document.getElementById('first_piece_at_hour'),
+                            minute: document.getElementById('first_piece_at_minute'),
+                            meridiem: document.getElementById('first_piece_at_meridiem'),
+                            comment: document.getElementById('first_piece_comment'),
+
+                            noOpStart: document.getElementById('no_op_start'),
+                            noOpBalancing: document.getElementById('no_op_balancing'),
+                            noOpBalancingComment: document.getElementById('no_op_balancing_comment'),
+
+                            isLineWet: document.getElementById('is_line_wet'),
+                            lineWetComment: document.getElementById('line_wet_comment')
+                        };
+
+                        // Deshabilitar inputs en bloque
+                        [
+                            el.hour, el.minute, el.meridiem, el.comment,
+                            el.noOpStart, el.noOpBalancing, el.noOpBalancingComment,
+                            el.isLineWet, el.lineWetComment
+                        ].forEach(input => input.disabled = true);
+
+                        // Parseo de hora
+                        let [firstHour = '', firstMinute = ''] = (report.first_piece_at || '00:00').split(':');
+
+                        let meridiem = firstHour > 12 ? "PM" : "AM";
+                        if (firstHour > 12) {
+                            firstHour = String(firstHour - 12).padStart(2, '0');
+                        }
+
+                        // Asignación de valores
+                        el.hour.value = firstHour;
+                        el.minute.value = firstMinute;
+                        el.meridiem.value = meridiem;
+
+                        el.comment.value = report.first_piece_comment || "";
+
+                        el.noOpStart.value = report.no_op_start || "";
+                        el.noOpBalancing.value = report.no_op_balancing || "";
+                        el.noOpBalancingComment.value = report.no_op_comment || "";
+
+                        el.isLineWet.selectedIndex = report.is_line_wet;
+                        el.lineWetComment.value = report.is_line_wet_comment || "";
+
+                        [
+                            el.hour, el.minute, el.meridiem,
+                            el.noOpStart, el.noOpBalancing,
+                            el.isLineWet
+                        ].forEach(input => {
+                            input.classList.add('initial-loaded');
+                            input.dispatchEvent(new Event('change'));
+                            input.dispatchEvent(new Event('input'));    
+                            input.classList.remove('initial-loaded');
+                        });
+                    }
                 }
 
             } catch (error) {

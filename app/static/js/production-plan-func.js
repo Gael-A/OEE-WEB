@@ -1,12 +1,7 @@
 // ===============================================================
-//  PRIORIDADES
+//  PRIORITIES
 // ===============================================================
-const priority = [
-    '1era', '2da', '3era', '4ta', '5ta', '6ta', '7ma', '8va', '9na', '10ma',
-    '11va', '12va', '13ra', '14ta', '15ta', '16ta', '17ma', '18va', '19na', '20ma',
-    '21va', '22va', '23ra', '24ta', '25ta', '26ta', '27ma', '28va', '29na', '30ma'
-];
-
+// The 'priority' array is now loaded from window.translations.priorities_array
 
 // ===============================================================
 //  DOM READY
@@ -87,7 +82,7 @@ function agregarJob(formNewJob, tbody, ajJob, ajReq) {
         .then(response => response.json())
         .then(data => {
             if (data.status !== "success") {
-                return showToast(data.message || "Error al agregar el trabajo.", false);
+                return showToast(data.message || window.translations.add_job_error, false);
             }
 
             const id = data.id;
@@ -95,14 +90,14 @@ function agregarJob(formNewJob, tbody, ajJob, ajReq) {
             tbody.appendChild(newRow);
 
             actualizarPrioridades(tbody);
-            showToast("Trabajo agregado exitosamente.", true);
+            showToast(window.translations.add_job_success, true);
 
             ajJob.value = "";
             ajReq.value = "";
 
             agregarEventoEliminar(newRow);
         })
-        .catch(error => showToast(error || "Error al agregar el trabajo.", false));
+        .catch(error => showToast(error || window.translations.add_job_error, false));
 }
 
 
@@ -128,9 +123,9 @@ function crearFilaJob(id, form) {
         <td class="action-td">
             <div class="action-button delete-job-button" 
                  id="${id}_delete_job"
-                 title="Eliminar Job Order del plan de producción"
+                 title="${window.translations.delete_job_title}"
                  data-job-id="${id}">
-                <img src="/static/svg/action-close-red.svg" alt="Eliminar">
+                <img src="/static/svg/action-close-red.svg" alt="${window.translations.delete_alt}">
             </div>
         </td>
     `;
@@ -163,9 +158,9 @@ function crearFilaCompleted(job) {
         <td class="closed-at">${formatDateTime(job.closed_at)}</td>
         <td class="action-td">
             <div class="action-button delete-completed-button"
-                 title="Eliminar Job Order"
+                 title="${window.translations.delete_completed_job_title}"
                  data-job-id="${job.id}">
-                <img src="/static/svg/action-close-red.svg" alt="Eliminar">
+                <img src="/static/svg/action-close-red.svg" alt="${window.translations.delete_alt}">
             </div>
         </td>
     `;
@@ -190,8 +185,8 @@ function crearFilaCompleted(job) {
 async function deleteJob(jobId, rowElement) {
 
     const accept = await customConfirm(
-        "¿Estás seguro de que deseas eliminar este trabajo? Esta acción no se puede deshacer.",
-        "Confirmar eliminación"
+        window.translations.delete_job_confirm_text,
+        window.translations.delete_job_confirm_title
     );
     if (!accept) return;
 
@@ -205,7 +200,7 @@ async function deleteJob(jobId, rowElement) {
         const data = await response.json();
 
         if (data.status !== "success") {
-            return showToast(data.message || "Error al eliminar el trabajo.", false);
+            return showToast(data.message || window.translations.delete_job_error, false);
         }
 
         // Eliminar fila visual
@@ -217,10 +212,10 @@ async function deleteJob(jobId, rowElement) {
             actualizarPrioridades(tbody);
         }
 
-        showToast("Trabajo eliminado exitosamente.", true);
+        showToast(window.translations.delete_job_success, true);
 
     } catch (error) {
-        showToast(error || "Error al eliminar el trabajo.", false);
+        showToast(error || window.translations.delete_job_error, false);
     }
 }
 
@@ -254,7 +249,10 @@ async function agregarEventosDeEdicion(row) {
 
         if ((value - req) >= 0) {
 
-            const confirm = await customConfirm("La cantidad actual es mayor o igual a la cantidad requerida. ¿Deseas marcar este job como completado?", "Marcar como completado");
+            const confirm = await customConfirm(
+                window.translations.mark_job_complete_confirm_text, 
+                window.translations.mark_job_complete_confirm_title
+            );
 
             if (!confirm) {
                 actualQtyInput.value = actualQtyInput.dataset.prevValue || 0;
@@ -273,7 +271,7 @@ async function agregarEventosDeEdicion(row) {
             completedTbody.prepend(completedRow);
             row.remove();            
             actualizarPrioridades(document.querySelector("#production-table tbody"));
-            showToast("Job marcado como completado.", true);
+            //showToast(window.translations.job_marked_completed, true);
         }
 
         row.querySelector(".delta").innerText = (value - req);
@@ -324,13 +322,14 @@ function initDragAndDrop(tbody) {
 
 
 // ===============================================================
-//  PRIORIDADES
+//  PRIORITIES
 // ===============================================================
 function actualizarPrioridades(tbody) {
     const priorityCells = tbody.querySelectorAll("tr .priority");
+    const priorities = window.translations.priorities_array || [];
 
     priorityCells.forEach((cell, index) => {
-        cell.innerText = priority[index] || `${index + 1}era`;
+        cell.innerText = priorities[index] || `${index + 1}${window.translations.priority_ordinal_suffix || ''}`;
         updateJobPriority(cell.closest("tr").dataset.jobId, index + 1);
     });
 }
@@ -346,7 +345,7 @@ function loadPlanProductionJobs(tbody) {
         .then(res => res.json())
         .then(data => {
             if (data.status !== "success") {
-                return showToast(data.message || "Error al cargar trabajos.", false);
+                return showToast(data.message || window.translations.load_jobs_error, false);
             }
 
             const jobs = data.data;
@@ -369,9 +368,9 @@ function loadPlanProductionJobs(tbody) {
 
             actualizarPrioridades(tbody);
 
-            showToast("Jobs cargados.", true);
+            //showToast(window.translations.jobs_loaded, true);
         })
-        .catch(error => showToast(error || "Error al cargar los trabajos.", false));
+        .catch(error => showToast(error || window.translations.load_jobs_error, false));
 }
 
 
@@ -386,7 +385,7 @@ function loadClosedJobs(tbodyCompleted, limit = 10) {
         .then(res => res.json())
         .then(data => {
             if (data.status !== "success") {
-                return showToast(data.message || "Error al cargar trabajos completados.", false);
+                return showToast(data.message || window.translations.load_completed_jobs_error, false);
             }
 
             const jobs = data.data || [];
@@ -398,9 +397,9 @@ function loadClosedJobs(tbodyCompleted, limit = 10) {
                 tbodyCompleted.appendChild(row);
             });
 
-            showToast("Completed jobs cargados.", true);
+            //showToast(window.translations.completed_jobs_loaded, true);
         })
-        .catch(err => showToast(err || "Error al cargar trabajos completados.", false));
+        .catch(err => showToast(err || window.translations.load_completed_jobs_error, false));
 }
 
 
@@ -416,11 +415,11 @@ function updateJobData(jobId, field, value) {
         .then(response => response.json())
         .then(data => {
             if (data.status !== "success") {
-                return showToast(data.message || "Error al actualizar los datos del trabajo.", false);
+                return showToast(data.message || window.translations.update_job_data_error, false);
             }
-            showToast("Datos del trabajo actualizados exitosamente.", true);
+            //showToast(window.translations.job_data_updated_success, true);
         })
-        .catch(error => showToast(error || "Error al actualizar los datos del trabajo.", false));
+        .catch(error => showToast(error || window.translations.update_job_data_error, false));
 }
 
 
@@ -436,10 +435,10 @@ function updateJobPriority(jobId, newPriority) {
         .then(response => response.json())
         .then(data => {
             if (data.status !== "success") {
-                return showToast(data.message || "Error al actualizar la prioridad del trabajo.", false);
+                return showToast(data.message || window.translations.update_job_priority_error, false);
             }
-            showToast("Prioridad del trabajo actualizada exitosamente.", true);
+            //showToast(window.translations.job_priority_updated_success, true);
         })
-        .catch(error => showToast(error || "Error al actualizar la prioridad del trabajo.", false));
+        .catch(error => showToast(error || window.translations.update_job_priority_error, false));
 }
 

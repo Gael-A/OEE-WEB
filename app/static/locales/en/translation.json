@@ -338,5 +338,33 @@
   "error_loading_pan_settings": "Error loading PAN settings.",
   "report_start_title": "SHIFT START REPORT",
   "alt_ranker": "Ranker",
-  "title_ranker": "PRODUCTION PLAN"
+  "title_ranker": "PRODUCTION PLAN",
+
+  "priorities_comment": "PRIORITIES",
+  "priorities_array": [
+    "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th",
+    "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th",
+    "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th"
+  ],
+  "priority_ordinal_suffix": "th",
+  "add_job_error": "Error adding job.",
+  "add_job_success": "Work order added successfully.",
+  "delete_job_title": "Remove Job Order from production plan",
+  "delete_alt": "Delete",
+  "delete_completed_job_title": "Delete Job Order",
+  "delete_job_confirm_text": "Are you sure you want to delete this job? This action cannot be undone.",
+  "delete_job_confirm_title": "Confirm deletion",
+  "delete_job_error": "Error deleting job.",
+  "delete_job_success": "Job deleted successfully.",
+  "mark_job_complete_confirm_text": "The current quantity is greater than or equal to the required quantity. Do you want to mark this job as completed?",
+  "mark_job_complete_confirm_title": "Mark as completed",
+  "load_jobs_error": "Error loading jobs.",
+  "load_completed_jobs_error": "Error loading completed jobs.",
+  "update_job_data_error": "Error updating job data.",
+  "update_job_priority_error": "Error updating job priority.",
+  "job_marked_completed": "Job marked as completed.",
+  "jobs_loaded": "Jobs loaded.",
+  "completed_jobs_loaded": "Completed jobs loaded.",
+  "job_data_updated_success": "Job data updated successfully.",
+  "job_priority_updated_success": "Job priority updated successfully."
 }
