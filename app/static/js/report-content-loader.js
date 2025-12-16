@@ -577,7 +577,7 @@ const DailyReportController = (function () {
                     const input = document.createElement('input');
                     input.className = div.className.replace('static-info', '').trim();
                     input.id = div.id;
-                    input.type = div.id === 'orden' ? 'text' : 'number';
+                    input.type = div.id in ['no_parte', 'orden'] ? 'text' : 'number';
                     input.value = div.textContent;
                     div.parentElement.replaceChild(input, div);
                 });

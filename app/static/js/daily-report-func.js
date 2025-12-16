@@ -121,8 +121,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (firstPieceAtHour && firstPieceAtMinute && firstPieceAtMeridiem) {
 
         async function checkTimeAndApplyNegativeClass() {
-            const hour12 = parseInt(firstPieceAtHour.value, 10) || 0;
-            const minute = parseInt(firstPieceAtMinute.value, 10) || 0;
+            const hour12 = parseInt(firstPieceAtHour.value, 10);
+            const minute = parseInt(firstPieceAtMinute.value, 10);
             const meridiem = firstPieceAtMeridiem.value;
 
             let hour24 = hour12;
@@ -132,8 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const { hours: comparison_hour, minutes: comparison_minute } = await waitForShiftFirstPiece();
 
             const isAfterShift =
-                hour24 > comparison_hour ||
-                (hour24 === comparison_hour && minute > comparison_minute);
+                hour24 > comparison_hour || (hour24 === comparison_hour && minute > comparison_minute);
 
             if (isAfterShift) {
                 firstPieceAtHour.classList.add('negative');

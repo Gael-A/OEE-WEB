@@ -329,7 +329,7 @@ export async function handleInitialLoad(state) {
     if (mode === 'current') {
         currentReportWrapper?.classList.remove('hidden');
         if (machinesTitle) machinesTitle.textContent = window.translations.viewer_machines_operating_now;
-        const dailyId = await loadHistoryReports(dataToLoad);
+        let dailyId = await loadHistoryReports(dataToLoad);
         if (dailyId) {
             await loadDailyStartInfo(dailyId);
             loadCurrentReport(dataToLoad);
@@ -342,7 +342,7 @@ export async function handleInitialLoad(state) {
     } else {
         currentReportWrapper?.classList.add('hidden');
         if (machinesTitle) machinesTitle.textContent = window.translations.viewer_last_machines_operating;
-        const dailyId = await loadHistoryReports(dataToLoad);
+        let dailyId = await loadHistoryReports(dataToLoad);
         if (dailyId) {
             await loadDailyStartInfo(dailyId);
         }
@@ -356,7 +356,7 @@ export async function handlePastModeUpdate(state) {
     document.getElementById('current-report-wrapper')?.classList.add('hidden');
     const machinesTitle = document.getElementById('machines-section-title');
     if (machinesTitle) machinesTitle.textContent = window.translations.viewer_last_machines_operating;
-    const dailyId = await loadHistoryReports(state.formData);
+    let dailyId = await loadHistoryReports(state.formData);
     if (dailyId) {
         await loadDailyStartInfo(dailyId);
     }
@@ -373,7 +373,7 @@ export async function handleCurrentModeUpdate(state) {
     document.getElementById('current-report-wrapper')?.classList.remove('hidden');
     const machinesTitle = document.getElementById('machines-section-title');
     if (machinesTitle) machinesTitle.textContent = window.translations.viewer_machines_operating_now;
-    const dailyId = await loadHistoryReports(state.currentFormData);
+    let dailyId = await loadHistoryReports(state.currentFormData);
     if (dailyId) {
         await loadDailyStartInfo(dailyId);
         loadCurrentReport(state.currentFormData);

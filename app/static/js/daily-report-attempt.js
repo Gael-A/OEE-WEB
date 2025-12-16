@@ -24,6 +24,10 @@ var dailyReportModule = (function() {
 // FUNCIÓN PARA CONVERTIR LA HORA DE FIRST PIECE A FORMATO 24 HORAS
 // -------------------------------------------------------------
 function getFirstPieceAt24() {
+    const firstPieceAtHour = document.getElementById('first_piece_at_hour');
+    const firstPieceAtMinute = document.getElementById('first_piece_at_minute');
+    const firstPieceAtMeridiem = document.getElementById('first_piece_at_meridiem');
+
     let hour = parseInt(firstPieceAtHour.value, 10);
     const minute = firstPieceAtMinute.value.padStart(2, '0');
     const meridiem = firstPieceAtMeridiem.value;
@@ -45,6 +49,15 @@ function getFirstPieceAt24() {
 // FUNCIÓN PARA CERRAR EL REPORTE DE INICIO DE TURNO
 // -------------------------------------------------------------
 async function closeShiftStartReport() {
+    const closeButton = document.getElementById('close-start-report-button');
+    const firstPieceComment = document.getElementById('first_piece_comment');
+    const noOpStartInput = document.getElementById('no_op_start');
+    const noOpBalancingInput = document.getElementById('no_op_balancing');
+    const noOpBalancingComment = document.getElementById('no_op_balancing_comment');
+    const isLineWet = document.getElementById('is_line_wet');
+    const lineWetComment = document.getElementById('line_wet_comment');
+
+
     if (closeButton.classList.contains('disabled')) {
         showToast('Please fill in all required fields before closing the report.', false);
         return;

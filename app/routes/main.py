@@ -158,15 +158,16 @@ def production_plan():
 @bp.route('/login')
 def login():
     translations = load_translations()
+    session['language'] = 'es'
     lang = session.get('language', 'es')
-    return render_template('login.html', translations=translations, lang=lang)
+    return render_template('login.html', translations=translations, lang='es')
 
 # Ruta para la página de registro
 @bp.route('/register')
 def register():
     translations = load_translations()
     lang = session.get('language', 'es')
-    return render_template('register.html', translations=translations, lang=lang)
+    return render_template('register.html', translations=translations, lang='es')
 
 # Ruta para el perfil de usuario
 @bp.route("/profile")
@@ -282,6 +283,7 @@ def suggestion_mailbox():
     remaining_time = max(0, session_lifetime - elapsed_time)
 
     translations = load_translations()
+
     lang = session.get('language', 'es')
 
     return render_template("suggestion-mailbox.html", session_timeout=remaining_time, translations=translations, lang=lang)
