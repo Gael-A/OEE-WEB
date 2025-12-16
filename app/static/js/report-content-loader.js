@@ -577,7 +577,7 @@ const DailyReportController = (function () {
                     const input = document.createElement('input');
                     input.className = div.className.replace('static-info', '').trim();
                     input.id = div.id;
-                    input.type = div.id in ['no_parte', 'orden'] ? 'text' : 'number';
+                    input.type = div.id in ['no_parte', 'orden'] ? 'number' : 'text';
                     input.value = div.textContent;
                     div.parentElement.replaceChild(input, div);
                 });
@@ -855,16 +855,24 @@ const DailyReportController = (function () {
                         el.isLineWet.selectedIndex = report.is_line_wet;
                         el.lineWetComment.value = report.is_line_wet_comment || "";
 
-                        [
+                        async function triggerInitialValidation(inputs) {
+                            inputs.forEach(i => i.classList.add('initial-loaded'));
+
+                            for (const input of inputs) {
+                                input.dispatchEvent(new Event('change'));
+                                input.dispatchEvent(new Event('input'));
+                            }
+
+                            await Promise.resolve();
+
+                            inputs.forEach(i => i.classList.remove('initial-loaded'));
+                        }
+
+                        await triggerInitialValidation([
                             el.hour, el.minute, el.meridiem,
                             el.noOpStart, el.noOpBalancing,
                             el.isLineWet
-                        ].forEach(input => {
-                            input.classList.add('initial-loaded');
-                            input.dispatchEvent(new Event('change'));
-                            input.dispatchEvent(new Event('input'));    
-                            input.classList.remove('initial-loaded');
-                        });
+                        ]);
                     }
                 }
 

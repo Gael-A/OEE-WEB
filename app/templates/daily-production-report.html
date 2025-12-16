@@ -59,17 +59,22 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td data-label="{{ translations.part_number }}"><input type="text" id="no_parte" list="part_nos"></td>
-                            <td data-label="{{ translations.order }}"><input type="text" id="orden"></td>
-                            <td data-label="{{ translations.quantity }}"><input type="number" id="cantidad" min="0">
+                            <td data-label="{{ translations.part_number }}">
+                                <input type="text" id="no_parte" list="part_nos">
                             </td>
-                            <td data-label="{{ translations.operator_count }}"><input type="number" id="no_op" min="0">
+                            <td data-label="{{ translations.order }}">
+                                <input type="text" id="orden">
+                            </td>
+                            <td data-label="{{ translations.quantity }}">
+                                <input type="number" id="cantidad" min="0">
+                            </td>
+                            <td data-label="{{ translations.operator_count }}">
+                                <input type="number" id="no_op" min="0">
                             </td>
                             <td data-label="">
-                                <div class="action-button" id="header-check-button"
-                                    title="{{ translations.report_confirm_header_changes }}"><img
-                                        src="{{ url_for('static', filename='svg/action-check.svg') }}"
-                                        alt="{{ translations.alt_confirm }}"></div>
+                                <div class="action-button" id="header-check-button" title="{{ translations.report_confirm_header_changes }}">
+                                    <img src="{{ url_for('static', filename='svg/action-check.svg') }}" alt="{{ translations.alt_confirm }}">
+                                </div>
                             </td>
                         </tr>
                     </tbody>
