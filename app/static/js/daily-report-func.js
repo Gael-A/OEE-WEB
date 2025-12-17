@@ -130,10 +130,10 @@ document.addEventListener('DOMContentLoaded', function () {
             else if (meridiem === 'AM' && hour12 === 12) hour24 = 0;
 
             const { hours: comparison_hour, minutes: comparison_minute } = await waitForShiftFirstPiece();
-
+            
             const isAfterShift =
-                hour24 > comparison_hour || (hour24 === comparison_hour && minute > comparison_minute);
-
+            hour24 > comparison_hour || (hour24 === comparison_hour && minute > comparison_minute);
+       
             if (isAfterShift) {
                 firstPieceAtHour.classList.add('negative');
                 firstPieceAtMinute.classList.add('negative');
@@ -181,8 +181,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (value > 59) this.value = 59;
             if (value < 0 || isNaN(value)) this.value = '';
         });
-
-        checkTimeAndApplyNegativeClass();
     }
 
     // -------------------------------------------------------------
