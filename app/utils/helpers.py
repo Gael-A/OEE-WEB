@@ -7,6 +7,65 @@ import collections
 from flask import session
 
 
+def timedelta_to_hhmm(td):
+    if td is None:
+        return None
+    total_seconds = int(td.total_seconds())
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    return f"{hours:02d}:{minutes:02d}"
+
+
+def get_weekday(date_str: str, language = 'en'):
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+
+    if language == 'es':
+        days = [
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado",
+            "Domingo",
+        ]
+
+        return {
+            "number": dt.weekday(),
+            "name": days[dt.weekday()]
+        }
+    
+    elif language == 'pl':
+        days = [
+            "Poniedziałek",
+            "Wtorek",
+            "Środa",
+            "Czwartek",
+            "Piątek",
+            "Sobota",
+            "Niedziela"
+        ]
+
+        return {
+            "number": dt.weekday(),
+            "name": days[dt.weekday()]
+        }
+
+    else:    
+        return {
+            "number": dt.weekday(),
+            "name": dt.strftime("%A")
+        }
+
+def get_week_dates(date_str: str):
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    
+    monday = dt - timedelta(days=dt.weekday())
+    
+    return [
+        (monday + timedelta(days=i)).strftime("%Y-%m-%d")
+        for i in range(7)
+    ]
 
 def get_shift_times(fecha_base, shift):
     if shift == "1":

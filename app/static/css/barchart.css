@@ -228,6 +228,12 @@
     pointer-events: none;
     z-index: 999;
     text-shadow: none;
+
+    max-width: 200%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    white-space: break-spaces;
+    text-align: center;
 }
 
 .report-chart .chart-body .bar-container .bar-label {

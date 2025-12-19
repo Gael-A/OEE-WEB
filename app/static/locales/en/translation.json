@@ -65,6 +65,15 @@
     "Fr",
     "Sa"
   ],
+  "weekdays": [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
+  ],
   "defect": "DEFECT.",
   "defects": "Defects",
   "diff": "DIFF.",

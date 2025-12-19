@@ -201,6 +201,35 @@ async function loadDailyResults(formData) {
     } catch (error) {
         showToast(window.translations.connection_error_loading_results);
     }
+
+    try {
+        window.renderBarChart(formData.pan, formData.shift, formData.date, "start_shift", "hour", 1800, [], "week", "target");
+    } catch {
+        showToast("!No chart found")
+    }
+
+    try {
+        const responseComments = await fetch(
+            `/report-attribute-data?pan=${formData.pan}&shift=${formData.shift}&date=${formData.date}&attribute=start_shift&target=target&selector=week`
+        );
+
+        const resultsComments = await responseComments.json();
+
+        if (Array.isArray(resultsComments)) {
+            resultsComments.forEach(item => {
+                const commentEl = document.getElementById(`${item.day}-comment`);
+
+                if (commentEl) {
+                    // Si no hay comentario real, muestra algo decente
+                    commentEl.textContent = item.comment && item.comment !== 'S/C'
+                        ? item.comment
+                        : 'Sin comentarios';
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error cargando comentarios:', error);
+    }
 }
 
 async function loadMachines(formData) {

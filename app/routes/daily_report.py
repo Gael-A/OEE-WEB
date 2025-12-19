@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, session
 from app.utils.db import get_connection
 from app.utils.decorators import login_required
-from app.utils.helpers import format_timedelta, get_shift_times, _calculate_target_per_hour, shift_time
+from app.utils.helpers import format_timedelta, get_shift_times, _calculate_target_per_hour, shift_time, get_week_dates, get_weekday, timedelta_to_hhmm
 from datetime import timedelta, datetime
 import decimal
 from math import ceil
@@ -884,145 +884,225 @@ def get_report_attribute_data():
 
         results = []
 
-        if selector == "hourly":
-            cursor.execute(
-                f"""
-                SELECT id
-                FROM daily_production_report
-                WHERE date = %s AND pan = %s AND shift IN ({','.join(['%s'] * len(shift_values))})
-                """,
-                (date, pan, *shift_values),
-            )
-            daily_reports = cursor.fetchall()
+        # =========================
+        # START SHIFT
+        # =========================
+        if attribute == "start_shift":
 
-            for report in daily_reports:
-                daily_id = report["id"]
+            if selector == "week":
+
+                language = session.get("language", "en")
+                
+                SHIFT_TARGETS = {
+                    '1': "6:45",
+                    '2': "16:35",
+                    '3': "00:55"
+                }
+
+                SHIFT_TEXT = {
+                    "es": "Turno",
+                    "en": "Shift",
+                    "pl": "Zakręt"
+                }
+
+                for dt in get_week_dates(date):
+                    cursor.execute(
+                        f"""
+                        SELECT DISTINCT id, shift, created_at
+                        FROM sql_xct_db.daily_production_report
+                        WHERE date = %s
+                            AND pan = %s
+                            AND shift IN ({','.join(['%s'] * len(shift_values))})
+                        ORDER BY created_at ASC
+                        LIMIT 1;
+                        """,
+                        (dt, pan, *shift_values),
+                    )
+
+                    daily_report = cursor.fetchone()
+
+                    if daily_report:
+                        daily_id = daily_report["id"]
+                        report_shift = daily_report["shift"]
+
+                        cursor.execute(
+                            """
+                            SELECT first_piece_at, first_piece_comment
+                            FROM sql_xct_db.shift_start_report
+                            WHERE daily_id = %s;
+                            """,
+                            (daily_id,),
+                        )
+
+                        row = cursor.fetchone()
+
+                        first_piece_at = timedelta_to_hhmm(row["first_piece_at"]) if row else None
+
+                        results.append({
+                            "id": f"{get_weekday(dt, language)['name']}-{SHIFT_TEXT[language]} {report_shift}",
+                            "start_shift": first_piece_at,
+                            "comment": row["first_piece_comment"] if row else None,
+                            "day": get_weekday(dt)['name'].lower(),
+                            "target": SHIFT_TARGETS[shift]
+                        })
+                    
+                    else:
+                        results.append({
+                            "id": f"{get_weekday(dt, language)['name']}-{SHIFT_TEXT[language]} {shift}",
+                            "start_shift": None,
+                            "comment": "S/C",
+                            "day": get_weekday(dt)['name'].lower(),
+                            "target": SHIFT_TARGETS[shift]
+                        })
+
+                conn.close()
+                return jsonify(results)
+
+            elif selector == "month":
+                return jsonify({"error": "Selector 'month' aún no implementado"}), 400
+
+            else:
+                return jsonify({"error": "Selector inválido. Usa 'week' o 'month'."}), 400
+        else:
+            if selector == "hourly":
                 cursor.execute(
                     f"""
-                    SELECT start_hour, end_hour, {attribute} AS attr_val, {target_key} AS target_val
-                    FROM hourly_production_report
-                    WHERE daily_id = %s
+                    SELECT id
+                    FROM daily_production_report
+                    WHERE date = %s AND pan = %s AND shift IN ({','.join(['%s'] * len(shift_values))})
                     """,
-                    (daily_id,),
+                    (date, pan, *shift_values),
                 )
-                rows = cursor.fetchall()
-                for row in rows:
-                    start = str(row['start_hour'])[:-3]
-                    end = str(row['end_hour'])[:-3]
-                    label = f"{start} {end}"
+                daily_reports = cursor.fetchall()
+
+                for report in daily_reports:
+                    daily_id = report["id"]
+                    cursor.execute(
+                        f"""
+                        SELECT start_hour, end_hour, {attribute} AS attr_val, {target_key} AS target_val
+                        FROM hourly_production_report
+                        WHERE daily_id = %s
+                        """,
+                        (daily_id,),
+                    )
+                    rows = cursor.fetchall()
+                    for row in rows:
+                        start = str(row['start_hour'])[:-3]
+                        end = str(row['end_hour'])[:-3]
+                        label = f"{start} {end}"
+                        results.append({
+                            "id": label,
+                            attribute: row["attr_val"] or 0,
+                            target_key: row["target_val"] or 0
+                        })
+
+            elif selector == "order":
+                cursor.execute(
+                    f"""
+                    SELECT DISTINCT (`order` COLLATE utf8mb4_general_ci) AS `order`
+                    FROM daily_production_report
+                    WHERE date = %s
+                        AND pan = %s
+                        AND shift IN ({','.join(['%s'] * len(shift_values))});
+                    """,
+                    (date, pan, *shift_values),
+                )
+                active_orders = [row["order"] or "Sin orden" for row in cursor.fetchall()]
+
+                if not active_orders:
+                    return jsonify([])
+
+                placeholders = ",".join(["%s"] * len(active_orders))
+                
+                cursor.execute(
+                    f"""
+                    SELECT
+                        dpr.`order`,
+                        dpr.quantity AS target_total,
+                        SUM(hpr.{attribute}) AS attribute_total
+                    FROM daily_production_report AS dpr
+                    INNER JOIN hourly_production_report AS hpr ON hpr.daily_id = dpr.id
+                    WHERE dpr.pan = %s
+                        AND dpr.shift IN ({','.join(['%s'] * len(shift_values))})
+                        AND dpr.`order` IN ({placeholders})
+                    GROUP BY dpr.`order`, dpr.quantity;
+                    """,
+                    (pan, *shift_values, *active_orders),
+                )
+                
+                results = []
+                for row in cursor.fetchall():
                     results.append({
-                        "id": label,
-                        attribute: row["attr_val"] or 0,
-                        target_key: row["target_val"] or 0
+                        "id": row["order"].upper(),
+                        attribute: row["attribute_total"] or 0,
+                        target_key: row["target_total"] or 0
                     })
 
-        elif selector == "order":
-            cursor.execute(
-                f"""
-                SELECT DISTINCT (`order` COLLATE utf8mb4_general_ci) AS `order`
-                FROM daily_production_report
-                WHERE date = %s
-                    AND pan = %s
-                    AND shift IN ({','.join(['%s'] * len(shift_values))});
-                """,
-                (date, pan, *shift_values),
-            )
-            active_orders = [row["order"] or "Sin orden" for row in cursor.fetchall()]
-
-            if not active_orders:
-                return jsonify([])
-
-            placeholders = ",".join(["%s"] * len(active_orders))
+                return jsonify(results)
             
-            cursor.execute(
-                f"""
-                SELECT
-                    dpr.`order`,
-                    dpr.quantity AS target_total,
-                    SUM(hpr.{attribute}) AS attribute_total
-                FROM daily_production_report AS dpr
-                INNER JOIN hourly_production_report AS hpr ON hpr.daily_id = dpr.id
-                WHERE dpr.pan = %s
-                    AND dpr.shift IN ({','.join(['%s'] * len(shift_values))})
-                    AND dpr.`order` IN ({placeholders})
-                GROUP BY dpr.`order`, dpr.quantity;
-                """,
-                (pan, *shift_values, *active_orders),
-            )
-            
-            results = []
-            for row in cursor.fetchall():
+            elif selector == "total":
+                cursor.execute(
+                    f"""
+                    SELECT id, part_no
+                    FROM daily_production_report
+                    WHERE date = %s
+                        AND pan = %s
+                        AND shift IN ({','.join(['%s'] * len(shift_values))})
+                    """,
+                    (date, pan, *shift_values),
+                )
+                reports = cursor.fetchall()
+
+                if not reports:
+                    return jsonify([])
+
+                daily_ids = [r["id"] for r in reports]
+                daily_report_ids = [r["id"] for r in reports]
+                part_no_id = [r["part_no"] for r in reports][0] # Se toma el part_no del primer registro
+
+                placeholders = ",".join(["%s"] * len(daily_ids))
+
+                cursor.execute(
+                    f"""
+                    SELECT
+                        SUM({attribute}) AS attr_sum
+                    FROM hourly_production_report
+                    WHERE daily_id IN ({placeholders})
+                    """,
+                    tuple(daily_ids),
+                )
+                row = cursor.fetchone()
+                total_attribute = row["attr_sum"] or 0
+
+                # Obtener target_per_hour
+                target_per_hour = None
+                if part_no_id:
+                    target_per_hour = _calculate_target_per_hour(cursor, daily_report_ids, part_no_id, False)
+
+                cursor.execute(
+                    """
+                    SELECT
+                        SUM(duration) AS total_durations
+                    FROM pan_schedule
+                    WHERE pan_id = %s
+                        AND NOT action = 'shift end';
+                    """, (pan)
+                )
+                row = cursor.fetchone()
+                total_duration = row["total_durations"] or 0
+
+                total_target = (shift_time(shift) - (float(total_duration) / 60)) * target_per_hour
+
                 results.append({
-                    "id": row["order"].upper(),
-                    attribute: row["attribute_total"] or 0,
-                    target_key: row["target_total"] or 0
+                    "id": pan,
+                    attribute: total_attribute,
+                    target_key: ceil(total_target / 5) * 5,
+                    "excuses_time": total_duration,
+                    "target_per_hour": target_per_hour,
                 })
 
-            return jsonify(results)
-        
-        elif selector == "total":
-            cursor.execute(
-                f"""
-                SELECT id, part_no
-                FROM daily_production_report
-                WHERE date = %s
-                    AND pan = %s
-                    AND shift IN ({','.join(['%s'] * len(shift_values))})
-                """,
-                (date, pan, *shift_values),
-            )
-            reports = cursor.fetchall()
-
-            if not reports:
-                return jsonify([])
-
-            daily_ids = [r["id"] for r in reports]
-            daily_report_ids = [r["id"] for r in reports]
-            part_no_id = [r["part_no"] for r in reports][0] # Se toma el part_no del primer registro
-
-            placeholders = ",".join(["%s"] * len(daily_ids))
-
-            cursor.execute(
-                f"""
-                SELECT
-                    SUM({attribute}) AS attr_sum
-                FROM hourly_production_report
-                WHERE daily_id IN ({placeholders})
-                """,
-                tuple(daily_ids),
-            )
-            row = cursor.fetchone()
-            total_attribute = row["attr_sum"] or 0
-
-            # Obtener target_per_hour
-            target_per_hour = None
-            if part_no_id:
-                target_per_hour = _calculate_target_per_hour(cursor, daily_report_ids, part_no_id, False)
-
-            cursor.execute(
-                """
-                SELECT
-                    SUM(duration) AS total_durations
-                FROM pan_schedule
-                WHERE pan_id = %s
-                    AND NOT action = 'shift end';
-                """, (pan)
-            )
-            row = cursor.fetchone()
-            total_duration = row["total_durations"] or 0
-
-            total_target = (shift_time(shift) - (float(total_duration) / 60)) * target_per_hour
-
-            results.append({
-                "id": pan,
-                attribute: total_attribute,
-                target_key: ceil(total_target / 5) * 5,
-                "excuses_time": total_duration,
-                "target_per_hour": target_per_hour,
-            })
-
-        else:
-            return jsonify({"error": "Selector inválido. Usa 'hourly', 'total' u 'order'."}), 400
+            else:
+                return jsonify({"error": "Selector inválido. Usa 'hourly', 'total' u 'order'."}), 400
 
         conn.close()
         return jsonify(results)

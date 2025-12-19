@@ -138,7 +138,7 @@ def viewer_daily_production_report():
     translations = load_translations()
     lang = session.get('language', 'es')
 
-    return render_template("viewer-daily-production-report.html", machines=machines, session_timeout=remaining_time, translations=translations, lang=lang)
+    return render_template("viewer-daily-production-report.html", machines=machines, session_timeout=remaining_time, translations=translations, lang=lang, pan_id=pan_id)
 
 # Ruta para la página del plan de producción
 @bp.route("/production-plan")

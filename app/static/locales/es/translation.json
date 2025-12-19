@@ -65,6 +65,15 @@
     "Vi",
     "Sa"
   ],
+  "weekdays": [
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+    "Domingo"
+  ],
   "defect": "DEFECT.",
   "defects": "Defectos",
   "diff": "DIF.",
