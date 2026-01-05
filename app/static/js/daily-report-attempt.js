@@ -51,7 +51,7 @@ async function closeShiftStartReport() {
     const lineWetComment = document.getElementById('line_wet_comment');
 
     if (closeButton.classList.contains('disabled')) {
-        showToast('Please fill in all required fields before closing the report.', false);
+        showToast(window.translations.fillAllRequiredFields, false);
         return;
     }
 
@@ -82,31 +82,18 @@ async function closeShiftStartReport() {
                 .querySelectorAll('.daily-start-section input, .daily-start-section select')
                 .forEach(input => input.disabled = true);
 
+            resetAutoCloseTimer();
+            resetMissingStartReportTimer();
+
             closeButton.classList.add('hidden');
         } else {
-            showToast(result.error || 'Failed to close shift start report.', false);
+            showToast(result.error || window.translations.failedToCloseShiftStartReport, false);
         }
 
     } catch (error) {
         console.error('Error closing shift start report:', error);
-        showToast('An error occurred while closing the shift start report.', false);
+        showToast(window.translations.errorClosingShiftStartReport, false);
     }
-}
-
-
-// -------------------------------------------------------------
-// CONFIRM PERSONALIZADO (YA EXISTENTE)
-// -------------------------------------------------------------
-function customConfirm(message, title = 'Confirmación') {
-    return showDialog({
-        title,
-        message,
-        type: 'confirm',
-        buttons: [
-            { text: 'Cancelar', class: 'secondary', value: false },
-            { text: 'Confirmar', class: 'primary', value: true }
-        ]
-    });
 }
 
 
@@ -146,8 +133,8 @@ function startAutoCloseCountdown() {
         if (!closeButton || closeButton.classList.contains('hidden')) return;
 
         const confirm = await customConfirm(
-            'Ya pasó más de un minuto desde que completaste el reporte.\n\n¿Deseas guardarlo y cerrar el reporte de inicio de turno?',
-            'Cerrar reporte'
+            window.translations.autoSaveConfirmation,
+            window.translations.closeReport
         );
 
         autoCloseTriggered = true;
@@ -170,6 +157,58 @@ function resetAutoCloseTimer() {
 
 
 // -------------------------------------------------------------
+// AUTO-ALERTA SI PASAN 30 MINUTOS SIN REPORTE DE INICIO COMPLETADO
+// (Se dispara cuando AL MENOS UNO de los requiredInputs está vacío)
+// -------------------------------------------------------------
+let missingStartReportTimer = null;
+let missingStartReportTriggered = false;
+
+// Devuelve true si HAY ALGÚN campo requerido vacío
+function hasAnyStartReportInputEmpty() {
+    const requiredInputs = [
+        'first_piece_at_hour',
+        'first_piece_at_minute',
+        'first_piece_at_meridiem',
+        'no_op_start',
+        'no_op_balancing',
+        'is_line_wet'
+    ];
+
+    return requiredInputs.some(id => {
+        const el = document.getElementById(id);
+        return !el || el.value === '' || el.value === null;
+    });
+}
+
+function startMissingStartReportCountdown() {
+    if (missingStartReportTimer || missingStartReportTriggered) return;
+
+    missingStartReportTimer = setTimeout(async () => {
+        missingStartReportTimer = null;
+
+        const closeButton = document.getElementById('close-start-report-button');
+        if (!closeButton || closeButton.classList.contains('hidden')) return;
+
+        missingStartReportTriggered = true;
+
+        await customAlert(
+            window.translations.shiftStartReportMissingWarning,
+            window.translations.attention
+        );
+
+    }, 30 * 60_000 ); // 30 minutos
+}
+
+function resetMissingStartReportTimer() {
+    if (missingStartReportTimer) {
+        clearTimeout(missingStartReportTimer);
+        missingStartReportTimer = null;
+    }
+    missingStartReportTriggered = false;
+}
+
+
+// -------------------------------------------------------------
 // INICIALIZADOR DE LISTENERS
 // -------------------------------------------------------------
 function initAutoCloseWatcher() {
@@ -177,18 +216,35 @@ function initAutoCloseWatcher() {
         '.daily-start-section input, .daily-start-section select'
     );
 
+    // Si desde el inicio hay campos vacíos, iniciar el contador de 30 min
+    if (hasAnyStartReportInputEmpty()) {
+        startMissingStartReportCountdown();
+    }
+
     inputs.forEach(input => {
         input.addEventListener('input', () => {
+            // Resetea ambos timers cuando el usuario edita
             resetAutoCloseTimer();
+            resetMissingStartReportTimer();
+
             if (areAllStartReportInputsFilled()) {
+                // Si ya está todo lleno, iniciamos el contador de 1 minuto
                 startAutoCloseCountdown();
+            } else {
+                // Si hay al menos uno vacío, iniciamos el contador de 30 minutos
+                startMissingStartReportCountdown();
             }
         });
 
         input.addEventListener('change', () => {
+            // Resetea ambos timers cuando el usuario cambia un select o similar
             resetAutoCloseTimer();
+            resetMissingStartReportTimer();
+
             if (areAllStartReportInputsFilled()) {
                 startAutoCloseCountdown();
+            } else {
+                startMissingStartReportCountdown();
             }
         });
     });

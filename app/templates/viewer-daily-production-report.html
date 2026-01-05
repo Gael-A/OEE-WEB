@@ -1,9 +1,9 @@
-    <!DOCTYPE html>
-    <html lang="{{ lang|default('en') }}">
+<!DOCTYPE html>
+<html lang="{{ lang|default('en') }}">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ translations.title_view_report }}</title>    
+        <title>{{ translations.title_view_report }}</title>
         <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
@@ -13,18 +13,17 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/clock.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/machine.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/table-whiteboard.css') }}"> 
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/table-whiteboard.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/barchart.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/report-comments.css') }}">
         <script src="{{ url_for('static', filename='js/module-barchart.js') }}" type="module"></script>
     </head>
     <body>
-
         {% set nav_items = [
             { 'id': 'current', 'icon': 'svg/icon-current.svg', 'alt_text': translations.alt_current_report, 'label': translations.nav_current_report },
             { 'id': 'results', 'icon': 'svg/icon-result.svg', 'alt_text': translations.alt_results, 'label': translations.nav_results },
-            { 'id': 'daily-start-info', 'icon': 'svg/icon-start.svg', 'alt_text': "!alt_text", 'label': '!' + (translations.report_start_title | upper), "class": 'daily-start-section' },    
+            { 'id': 'daily-start-info', 'icon': 'svg/icon-start.svg', 'alt_text': translations.alt_start_info, 'label': (translations.report_start_title | upper), "class": 'daily-start-section' },    
             { 'id': 'machines', 'icon': 'svg/icon-machine.svg', 'alt_text': translations.alt_operating_machines, 'label': translations.operating_machines, 'class': 'operating-machines-section' },
             { 'id': 'history', 'icon': 'svg/icon-history.svg', 'alt_text': translations.alt_history, 'label': translations.nav_history }
         ] %}
@@ -41,12 +40,11 @@
 
 
         {% import 'modules/machine.html' as machines_module %}
-
         <div class="main snap-container">
             <div class="content">
                 <div class="indicators snap-section" id="current"></div>
                 <div id="current-report-wrapper">
-                    <div class="section-header"> 
+                    <div class="section-header">
                         <h2>{{ translations.nav_current_report }}</h2>
                         <div class="last-updated-timestamp" id="current-report-timestamp">
                             {{ translations.last_update }} --/--/-- --:--
@@ -57,12 +55,10 @@
                     </div>
                     <div id="current-report-section" class="report-viewer-section">
                         <div id="current-report-container" class="report-container">
-                            <!-- El reporte activo se cargará aquí -->
-                        </div>
+                            <!-- El reporte activo se cargará aquí --></div>
                         <div class="section-footer"></div>
                     </div>
                 </div>
-
                 <div class="indicators snap-section" id="results"></div>
                 <div class="section-header">
                     <h2>{{ translations.nav_results }}</h2>
@@ -92,7 +88,6 @@
                     </div>
                 </div>
                 <div class="section-footer"></div>
-
                 <!-- Section of Start Shift .daily-start-section -->
                 <div class="indicators snap-section daily-start-section hidden" id="daily-start-info"></div>
                 <div class="section-header daily-start-section">
@@ -103,79 +98,109 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>!Comentarios</th>
+                                <th>{{ translations.comments }}</th>
                             </tr>
                         </thead>
                         <tbody style="display: table-row-group;">
                             <tr>
-                                <td data-label=""> 
+                                <td data-label="">
                                     <div class="inputs-row">
-                                        <input type="number" id="first_piece_at_hour" min="1" max="12" disabled>
+                                        <input
+                                            type="number"
+                                            id="first_piece_at_hour"
+                                            min="1"
+                                            max="12"
+                                            disabled
+                                        >
                                         :
-                                        <input type="number" id="first_piece_at_minute" min="0" max="59" disabled>
+                                        <input
+                                            type="number"
+                                            id="first_piece_at_minute"
+                                            min="0"
+                                            max="59"
+                                            disabled
+                                        >
                                         <select id="first_piece_at_meridiem" disabled>
                                             <option value="AM">AM</option>
                                             <option value="PM">PM</option>
                                         </select>
                                     </div>
-                                    <label for="first_piece_at_hour">!Hora que salio la primer pieza</label>
+                                    <label for="first_piece_at_hour">{{ translations.first_piece_time }}</label>
                                 </td>
-                                <td data-label="!Comentarios" style="display: block;"><input type="text" id="first_piece_comment" disabled></td>
+                                <td data-label="{{ translations.comments }}" style="display: block;">
+                                    <input type="text" id="first_piece_comment" disabled>
+                                </td>
                             </tr>
                             <tr>
                                 <td data-label="">
-                                    <select name="is_line_wet" id="is_line_wet" class="negative" disabled>
+                                    <select
+                                        name="is_line_wet"
+                                        id="is_line_wet"
+                                        class="negative"
+                                        disabled
+                                    >
                                         <option value="0">No</option>
                                         <option value="1">Si</option>
                                     </select>
-                                    <label for="is_line_wet">!¿La linea estaba mojada?</label> 
+                                    <label for="is_line_wet">{{ translations.is_line_wet }}</label>
                                 </td>
-                                <td data-label="!Comentarios" style="display: block;"><input type="text" id="line_wet_comment" class="negative" disabled></td>
+                                <td data-label="{{ translations.comments }}" style="display: block;">
+                                    <input
+                                        type="text"
+                                        id="line_wet_comment"
+                                        class="negative"
+                                        disabled
+                                    >
+                                </td>
                             </tr>
                             <tr>
                                 <td data-label="">
                                     <div class="inputs-row">
-                                        <input type="number" name="no_op_start" id="no_op_start" disabled>
+                                        <input
+                                            type="number"
+                                            name="no_op_start"
+                                            id="no_op_start"
+                                            disabled
+                                        >
                                         VS
-                                        <input type="number"id="no_op_balancing" min="0" disabled>
+                                        <input
+                                            type="number"
+                                            id="no_op_balancing"
+                                            min="0"
+                                            disabled
+                                        >
                                     </div>
-                                    <label for="no_op_start">!Operadores en linea vs en balanceo</label>
+                                    <label for="no_op_start">{{ translations.operators_in_line_vs_balancing }}</label>
                                 </td>
-                                <td data-label="!Comentarios" style="display: block;"><input type="text" id="no_op_balancing_comment" disabled></td>
+                                <td data-label="{{ translations.comments }}" style="display: block;">
+                                    <input type="text" id="no_op_balancing_comment" disabled>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="section-footer daily-start-section"></div>
-                
                 <div class="indicators snap-section daily-start-section hidden" id="daily-start-info"></div>
-
                 <div class="section-header daily-start-section">
-                    <h2>!INICIO DE TURNO SEMANAL</h2>
+                    <h2>{{ translations.weekly_shift_start | upper }}</h2>
                 </div>
-
                 <div class="daily-start-section grid-12">
-                    {{ report_chart.render_report_chart_module(7, 'week', 'start_shift', 'target', '!Start Shift', 'hour', pan_id) }}
-
+                    {{ report_chart.render_report_chart_module(7, 'week', 'start_shift', 'target', translations.start_shift, 'hour', pan_id) }}
                     <div class="module col-span-5 comments-summary">
                         {% set days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] %}
                         
                         {% for day in days %}
-                            <div class="comment-container snap-section">
-                                <div class="day-title">
-                                    {{ day[0]|upper + day[1:] }}
-                                </div>
-                                <div class="day-comment" id="{{ day }}-comment">
-                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                                </div>
+                        <div class="comment-container snap-section">
+                            <div class="day-title">
+                                {{ translations[day] }}
                             </div>
+                            <div class="day-comment" id="{{ day }}-comment"></div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
-
                 <div class="section-footer daily-start-section"></div>
-
-                <div class="indicators snap-section operating-machines-section" id="machines" ></div>
+                <div class="indicators snap-section operating-machines-section" id="machines"></div>
                 <div class="section-header operating-machines-section">
                     <h2 id="machines-section-title">{{ translations.viewer_machines_operating_now }}</h2>
                 </div>
@@ -184,37 +209,45 @@
                         {{ machines_module.render_machine_module(machine) }}
                     {% endfor %}
                 </div>
-                <div class="machine-actions-container operating-machines-section hidden" id="machine-actions-container">
-                </div>
+                <div class="machine-actions-container operating-machines-section hidden" id="machine-actions-container"></div>
                 <div class="section-footer operating-machines-section"></div>
-
                 <div class="indicators snap-section" id="history"></div>
                 <div class="section-header">
                     <h2>{{ translations.nav_history }}</h2>
                 </div>
                 <div id="history-report-section" class="report-viewer-section">
                     <div id="history-reports-container" class="report-container">
-                        <!-- Los reportes cerrados se cargarán aquí -->
-                    </div>
+                        <!-- Los reportes cerrados se cargarán aquí --></div>
                 </div>
                 <div class="section-footer"></div>
-
                 <template id="viewer-row-template">
                     <tr class="snap-section">
-                        <td data-label="{{ translations.hour | upper }}"><div class="static-info hora"></div></td>
-                        <td data-label="{{ translations.target | upper }}"><div class="static-info meta"></div></td>
-                        <td data-label="{{ translations.prod | upper }}"><div class="static-info prod"></div></td>
-                        <td data-label="{{ translations.accum | upper }}"><div class="static-info acum"></div></td>
-                        <td data-label="{{ translations.diff | upper }}"><div class="static-info dif"></div></td>
-                        <td data-label="{{ translations.defect | upper }}"><div class="static-info defect"></div></td>
-                        <td data-label="{{ translations.notes_incidents | upper }}"><div class="static-info notas-incidentes"></div></td>
+                        <td data-label="{{ translations.hour | upper }}">
+                            <div class="static-info hora"></div>
+                        </td>
+                        <td data-label="{{ translations.target | upper }}">
+                            <div class="static-info meta"></div>
+                        </td>
+                        <td data-label="{{ translations.prod | upper }}">
+                            <div class="static-info prod"></div>
+                        </td>
+                        <td data-label="{{ translations.accum | upper }}">
+                            <div class="static-info acum"></div>
+                        </td>
+                        <td data-label="{{ translations.diff | upper }}">
+                            <div class="static-info dif"></div>
+                        </td>
+                        <td data-label="{{ translations.defect | upper }}">
+                            <div class="static-info defect"></div>
+                        </td>
+                        <td data-label="{{ translations.notes_incidents | upper }}">
+                            <div class="static-info notas-incidentes"></div>
+                        </td>
                     </tr>
                 </template>
-
                 <div id="toast" class="toast"></div>
             </div>
         </div>
-        
         <script type="module" src="{{ url_for('static', filename='js/tool-functionality.js') }}" data-loader="viewer"></script>
         <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
         <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
@@ -230,4 +263,4 @@
             initSessionTimeout(sessionTimeout, logoutUrl);
         </script>
     </body>
-    </html>
+</html>

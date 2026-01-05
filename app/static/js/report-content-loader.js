@@ -203,8 +203,8 @@ const DailyReportController = (function () {
 
         const horaEl = tr.querySelector('.hora');
         const interval = (state.effectiveShiftTimes && state.effectiveShiftTimes.length > 0)
-            ? (state.effectiveShiftTimes[rowIndex] || '00:00 - 00:00')
-            : '00:00 - 00:00';
+            ? (state.effectiveShiftTimes[rowIndex] || (window.translations.default_time_interval || '00:00 - 00:00'))
+            : (window.translations.default_time_interval || '00:00 - 00:00');
         if (horaEl) horaEl.textContent = interval;
 
         const metaDiv = tr.querySelector('.static-info.meta');
@@ -341,7 +341,7 @@ const DailyReportController = (function () {
             row.querySelectorAll('input').forEach(input => {
                 const staticInfo = document.createElement('div');
                 staticInfo.className = `static-info ${input.className}`;
-                staticInfo.textContent = input.value || ' ';
+                staticInfo.textContent = input.value || '';
                 input.parentElement.replaceChild(staticInfo, input);
             });
 
@@ -368,7 +368,7 @@ const DailyReportController = (function () {
             showToast(window.translations.report_row_updated_successfully, true);
             recalculateTable();
         } catch (e) {
-            console.error("Error updating row:", e);
+            console.error(window.translations.console_error_updating_row, e);
             showToast(window.translations.report_connection_error_updating);
         }
     }
@@ -433,7 +433,7 @@ const DailyReportController = (function () {
             row.querySelectorAll('input').forEach(input => {
                 const staticInfo = document.createElement('div');
                 staticInfo.className = `static-info ${input.className}`;
-                staticInfo.textContent = input.value || ' ';
+                staticInfo.textContent = input.value || '';
                 input.parentElement.replaceChild(staticInfo, input);
             });
 
@@ -460,7 +460,7 @@ const DailyReportController = (function () {
 
             recalculateTable();
         } catch (e) {
-            console.error("Error saving new row:", e);
+            console.error(window.translations.console_error_saving_row, e);
             showToast(window.translations.report_connection_error_saving_row);
         }
     }
@@ -538,7 +538,7 @@ const DailyReportController = (function () {
         let dailyReportId = null;
         const headerCheckButton = document.getElementById('header-check-button');
         if (!headerCheckButton) {
-            console.error("No se encontró el botón de confirmación del encabezado.");
+            console.error(window.translations.console_error_header_button_not_found);
             return;
         }
 
@@ -676,7 +676,7 @@ const DailyReportController = (function () {
 
                     recalculateTable();
                 } catch (err) {
-                    console.error("Error updating header:", err);
+                    console.error(window.translations.console_error_updating_header, err);
                     showToast(window.translations.report_connection_error_updating);
                 }
                 return;
@@ -720,8 +720,9 @@ const DailyReportController = (function () {
                 document.getElementById('close-start-report-button').classList.remove('hidden');
                 initializeReportTable(state.formData, state.dailyReportId, [], lastEndHour);
                 setupReportActionButton(state.dailyReportId, false);
+                startMissingStartReportCountdown();
             } catch (err) {
-                console.error("Error creating report:", err);
+                console.error(window.translations.console_error_creating_report, err);
                 showToast(window.translations.report_connection_error_creating);
             }
         };
@@ -740,11 +741,11 @@ const DailyReportController = (function () {
 
         try {
             state.panSchedule = await fetchPanSchedule(formData.pan).catch(err => {
-                console.error("Failed to load pan schedule:", err);
+                console.error(window.translations.console_error_failed_pan_schedule, err);
                 return [];
             });
         } catch (err) {
-            console.error("Error fetching pan schedule:", err);
+            console.error(window.translations.console_error_fetching_pan_schedule, err);
             state.panSchedule = [];
         }
 
@@ -793,19 +794,19 @@ const DailyReportController = (function () {
                     if (responseStartShift.status === 404) {
                         document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
                         document.getElementById('close-start-report-button').classList.remove('hidden');
-                        console.log("No existe reporte de inicio de turno.");
+                        console.log(window.translations.console_info_no_shift_start_report);
                     } else {
                         const dataStartShift = await responseStartShift.json().catch(() => ({}));
                         
                         if (!responseStartShift.ok) {
-                            console.error("Error al obtener reporte:", dataStartShift.error);
+                            console.error(window.translations.console_error_getting_report, dataStartShift.error);
                             return;
                         }
 
                         // Si existe el reporte
                         const report = dataStartShift.report;
 
-                        console.log("Shift Start Report:", report);
+                        console.log(window.translations.console_info_shift_start_report, report);
 
                         // Aquí ya puedes colocar los valores en los campos si lo deseas:
                         document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
@@ -834,9 +835,9 @@ const DailyReportController = (function () {
                         ].forEach(input => input.disabled = true);
 
                         // Parseo de hora
-                        let [firstHour = '', firstMinute = ''] = (report.first_piece_at || '00:00').split(':');
+                        let [firstHour = '', firstMinute = ''] = (report.first_piece_at || (window.translations.default_time || '00:00')).split(':');
 
-                        let meridiem = firstHour > 12 ? "PM" : "AM";
+                        let meridiem = firstHour > 12 ? (window.translations.time_pm || "PM") : (window.translations.time_am || "AM");
                         if (firstHour > 12) {
                             firstHour = String(firstHour - 12).padStart(2, '0');
                         }
@@ -877,10 +878,10 @@ const DailyReportController = (function () {
                 }
 
             } catch (error) {
-                console.error("Error en fetch:", error);
+                console.error(window.translations.console_error_fetch, error);
             }
         } catch (e) {
-            console.error("Error loading open daily report:", e);
+            console.error(window.translations.console_error_loading_open_report, e);
             showToast(window.translations.report_connection_error_creating);
             setupHeaderInteraction(formData);
         }
@@ -944,11 +945,12 @@ const DailyReportController = (function () {
 
             if (dataSettings.need_daily_start_info) {
                 dailyStartSection.forEach(section => section.classList.remove('hidden'));
+                startMissingStartReportCountdown();
             } else {
                 dailyStartSection.forEach(section => section.classList.add('hidden'));
             }
         } catch (error) {
-            console.error("Error al obtener la configuración del PAN:", error);
+            console.error(window.translations.console_error_getting_pan_config, error);
             showToast(window.translations.error_loading_pan_settings, false);
         }
     }

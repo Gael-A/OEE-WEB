@@ -3,14 +3,36 @@ from app.utils.db import get_connection
 from app.utils.translation import load_translations
 from app.utils.decorators import login_required, admin_required, production_leader_required, supervisor_required
 import time
+
 bp = Blueprint('main', __name__)
 
 # This will run before each request to this blueprint
 @bp.before_request
 def set_language_from_param():
     lang_code = request.args.get('lang')
+    if not lang_code:
+        lang_code = session.get('language')
+
     if lang_code and lang_code in ['en', 'es', 'pl']:
         session['language'] = lang_code
+    else:
+        """
+        Mejor practica: detectar el idioma del navegador, pero por simplicidad se fija en español por momento.
+        Al pasar a la etapa de internacionalización completa, se puede activar este bloque.
+
+        accept_language = request.headers.get('Accept-Language', '')
+        
+        if accept_language.startswith('es'):
+            session['language'] = 'es'
+        elif accept_language.startswith('en'):
+            session['language'] = 'en'
+        elif accept_language.startswith('pl'):
+            session['language'] = 'pl'
+        else:
+            session['language'] = 'es'
+        """
+        session['language'] = 'es'
+
 
 # Ruta para el dashboard principal
 @bp.route("/dashboard")

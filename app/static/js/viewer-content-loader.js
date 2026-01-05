@@ -205,7 +205,7 @@ async function loadDailyResults(formData) {
     try {
         window.renderBarChart(formData.pan, formData.shift, formData.date, "start_shift", "hour", 1800, [], "week", "target");
     } catch {
-        showToast("!No chart found")
+        showToast(window.translations.no_chart_found)
     }
 
     try {
@@ -220,15 +220,14 @@ async function loadDailyResults(formData) {
                 const commentEl = document.getElementById(`${item.day}-comment`);
 
                 if (commentEl) {
-                    // Si no hay comentario real, muestra algo decente
                     commentEl.textContent = item.comment && item.comment !== 'S/C'
                         ? item.comment
-                        : 'Sin comentarios';
+                        : window.translations.no_comments;
                 }
             });
         }
     } catch (error) {
-        console.error('Error cargando comentarios:', error);
+        console.error(window.translations.error_loading_comments, error);
     }
 }
 
@@ -253,13 +252,13 @@ async function loadDailyStartInfo(dailyId) {
         }
 
         if (!responseStartShift.ok) {
-            console.error("Error al obtener reporte:", dataStartShift.error);
+            console.error(window.translations.error_getting_report, dataStartShift.error);
             return;
         }
 
         const report = dataStartShift.report;
 
-        console.log("Shift Start Report:", report);
+        console.log(window.translations.shift_start_report, report);
 
         document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
 
@@ -277,9 +276,9 @@ async function loadDailyStartInfo(dailyId) {
             lineWetComment: document.getElementById('line_wet_comment')
         };
 
-        let [firstHour = '', firstMinute = ''] = (report.first_piece_at || '00:00').split(':');
+        let [firstHour = '', firstMinute = ''] = (report.first_piece_at || window.translations.default_time).split(':');
 
-        let meridiem = firstHour > 12 ? "PM" : "AM";
+        let meridiem = firstHour > 12 ? window.translations.pm : window.translations.am;
         if (firstHour > 12) {
             firstHour = String(firstHour - 12).padStart(2, '0');
         }
@@ -318,7 +317,7 @@ async function loadDailyStartInfo(dailyId) {
         ]);
 
     } catch (error) {
-        console.error("Error en fetch:", error);
+        console.error(window.translations.fetch_error, error);
     }
 }
 
@@ -352,7 +351,7 @@ async function getPanSettings(pan) {
             dailyStartSection.forEach(section => section.classList.add('hidden'));
         }
     } catch (error) {
-        console.error("Error al obtener la configuración del PAN:", error);
+        console.error(window.translations.error_getting_pan_config, error);
         showToast(window.translations.error_loading_pan_settings, false);
     }
 }

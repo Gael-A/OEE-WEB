@@ -1,146 +1,135 @@
 <!DOCTYPE html>
 <html lang="{{ lang|default('en') }}">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ translations.title_production_report }}</title>
-    <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/toolbar.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/clock.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/form-whiteboard.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/table-whiteboard.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-dialog.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/production-plan.css') }}">
-</head>
-
-<body>
-    {% set nav_items = [
-    { 'id': 'add-job', 'icon': 'svg/action-add.svg', 'alt_text': "!Agregar job order", 'label': "!AGREGAR JOB ORDER"},
-    { 'id': 'production-plan', 'icon': 'svg/icon-ranker.svg', 'alt_text': "!Plan de producción", 'label': "!PLAN DE PRODUCCIÓN" },
-    { 'id': 'last-completed-job', 'icon': 'svg/icon-history.svg', 'alt_text': "!Last completed job orders", 'label': "!LAST COMPLETED JOB ORDERS" }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ translations.title_production_report }}</title>
+        <link rel="icon" href="{{ url_for('static', filename='img/ilc_logo.png') }}" type="image/x-icon">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/toolbar.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/clock.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main-content.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/form-whiteboard.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/table-whiteboard.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-dialog.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/production-plan.css') }}">
+    </head>
+    <body>
+        {% set nav_items = [
+    { 'id': 'add-job', 'icon': 'svg/action-add.svg', 'alt_text': translations.alt_add_job_order, 'label': translations.add_job_order},
+    { 'id': 'production-plan', 'icon': 'svg/icon-ranker.svg', 'alt_text': translations.alt_production_plan, 'label': translations.production_plan_title },
+    { 'id': 'last-completed-job', 'icon': 'svg/icon-history.svg', 'alt_text': translations.alt_last_completed_jobs, 'label': translations.last_completed_jobs_title }
     ] %}
 
     {% set show_mode_toggle = session.get('role') == 'admin' and false %}
     {% include 'modules/menus.html' %}
-
-    <div class="main snap-container">
-        <div class="content">
-
- 
-            <div class="indicators snap-section" id="add-job"></div>
-            <div class="section-header">
-                <h2>!AGREGAR JOB ORDER</h2>
+        <div class="main snap-container">
+            <div class="content">
+                <div class="indicators snap-section" id="add-job"></div>
+                <div class="section-header">
+                    <h2>{{ translations.add_job_order }}</h2>
+                </div>
+                <div class="header-report">
+                    <table class="header-report-table job-add-table">
+                        <thead>
+                            <tr>
+                                <th>{{ translations.job_order_short }}</th>
+                                <th>{{ translations.required_quantity }}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="{{ translations.job_order_short }}">
+                                    <input type="text" id="aj-job" required>
+                                </td>
+                                <td data-label="{{ translations.required_quantity }}">
+                                    <input
+                                        type="number"
+                                        id="aj-req"
+                                        min="0"
+                                        required
+                                    >
+                                </td>
+                                <td data-label="">
+                                    <div class="action-button" id="add-job-button" title="{{ translations.add_to_production_plan }}">
+                                        <img src="{{ url_for('static', filename='svg/action-add-green.svg') }}" alt="{{ translations.add }}">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section-footer"></div>
+                <div class="indicators snap-section" id="production-plan"></div>
+                <div class="section-header">
+                    <h2>{{ translations.production_plan_title }}</h2>
+                </div>
+                <div class="board">
+                    <table id="production-table" class="prod-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>{{ translations.priorities }}</th>
+                                <th>{{ translations.job_order_short }}</th>
+                                <th>{{ translations.required_quantity }}</th>
+                                <th>{{ translations.real_output }}</th>
+                                <th>{{ translations.delta }}</th>
+                                <th>{{ translations.special_requirements_comments }}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="section-footer"></div>
+                <div class="indicators snap-section" id="last-completed-job"></div>
+                <div class="section-header">
+                    <h2>{{ translations.last_completed_jobs_title }}</h2>
+                </div>
+                <div class="board">
+                    <table id="completed-table" class="prod-table">
+                        <thead>
+                            <tr>
+                                <th>{{ translations.job_order_short }}</th>
+                                <th>{{ translations.required_quantity }}</th>
+                                <th>{{ translations.real_output }}</th>
+                                <th>{{ translations.delta }}</th>
+                                <th>{{ translations.special_requirements_comments }}</th>
+                                <th>{{ translations.date }}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="section-footer"></div>
             </div>
-
-            <div class="header-report">
-                <table class="header-report-table job-add-table">
-                    <thead>
-                        <tr>
-                            <th>!#Job Orden</th>
-                            <th>!Cantidad Requerida</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr>
-                            <td data-label="!#Job Orden">
-                                <input type="text" id="aj-job" required>
-                            </td>
-
-                            <td data-label="!Cantidad Requerida">
-                                <input type="number" id="aj-req" min="0" required>
-                            </td>
-
-                            <td data-label="">
-                                <div class="action-button" id="add-job-button" title="Agregar al plan de producción">
-                                    <img src="{{ url_for('static', filename='svg/action-add-green.svg') }}" alt="Agregar">
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="section-footer"></div>
-
-            <div class="indicators snap-section" id="production-plan"></div>
-            <div class="section-header">
-                <h2>!PLAN DE PRODUCCIÓN</h2>
-            </div>
-            <div class="board">
-                <table id="production-table" class="prod-table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>!Prioridades</th>
-                            <th>!#Job Orden</th>
-                            <th>!Cantidad Requerida</th>
-                            <th>!Salida Real</th>
-                            <th>!Delta</th>
-                            <th>!Requerimientos Especiales o Comentarios</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-                    </tbody>
-                </table>
-            </div>
-            <div class="section-footer"></div>
-
-
-            <div class="indicators snap-section" id="last-completed-job"></div>
-            <div class="section-header">
-                <h2>!Last Completed Job Orders</h2>
-            </div>
-
-            <div class="board">
-                <table id="completed-table" class="prod-table">
-                    <thead>
-                        <tr>
-                            <th>!#Job Orden</th>
-                            <th>!Cantidad Requerida</th>
-                            <th>!Salida Real</th>
-                            <th>!Delta</th>
-                            <th>!Requerimientos Especiales o Comentarios</th>
-                            <th>!Fecha</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="section-footer"></div>
-
         </div>
-    </div>
-
-    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/production-plan-func.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/tool-functionality.js') }}" data-loader="plan" data-user-role="{{ session.get('role', 'user') }}"></script>
-    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
-    <!--
-        <script src="{{ url_for('static', filename='js/input-validation.js') }}" defer></script>
-    -->
-    <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
-
-    <script>
+        <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/custom-dialog.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/production-plan-func.js') }}"></script>
+        <script
+            type="module"
+            src="{{ url_for('static', filename='js/tool-functionality.js') }}"
+            data-loader="plan"
+            data-user-role="{{ session.get('role', 'user') }}"
+        ></script>
+        <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+        <!--
+            <script src="{{ url_for('static', filename='js/input-validation.js') }}" defer></script>
+        -->
+        <script src="{{ url_for('static', filename='js/session-timeout.js') }}"></script>
+        <script>
         window.translations = {{ translations | tojson }};
 
         const sessionTimeout = {{ session_timeout|default (0) }};
         const logoutUrl = "{{ url_for('auth.logout_user') }}";
         initSessionTimeout(sessionTimeout, logoutUrl);
-    </script>
-</body>
+        </script>
+    </body>
+</html>

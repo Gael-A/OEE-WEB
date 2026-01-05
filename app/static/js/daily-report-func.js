@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     isLineWet = document.getElementById('is_line_wet');
 
-    console.log('Daily Report Func JS loaded');
+    console.log(window.translations.dailyReportLoaded);
 
     // -------------------------------------------------------------
     // NO OP
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (noOpBalancingComment.value !== 'OK') {
                     noOpBalancingComment.dataset.previousValue = noOpBalancingComment.value;
                 }
-                noOpBalancingComment.value = 'OK';
+                noOpBalancingComment.value = window.translations.ok;
             }
         }
     }
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     !firstPieceAtMinute.classList.contains('initial-loaded') &&
                     !firstPieceAtMeridiem.classList.contains('initial-loaded')) {
                     firstPieceComment.dataset.previousValue = firstPieceComment.value;
-                    firstPieceComment.value = 'OK';
+                    firstPieceComment.value = window.translations.ok;
                 }
             }
         }
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!isLineWet.classList.contains('initial-loaded')) {
                 lineWetComment.dataset.previousValue = lineWetComment.value;
-                lineWetComment.value = 'OK';
+                lineWetComment.value = window.translations.ok;
             }
         }
         checkIfAllInputsAreFilled();
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function () {
             checkIfAllInputsAreFilled();
 
             if (this.classList.contains('disabled')) {
-                showToast('Please fill in all required fields before closing the report.', false);
+                showToast(window.translations.fillAllFields, false);
                 return;
             }
             closeShiftStartReport();
