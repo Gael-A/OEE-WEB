@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Asumo que tienes una función global para esto en password-toggle.js
     // Si no, puedes definirla aquí o importarla.
-    initializePasswordToggle('toggle-new-password', 'new_password', 'new-password-icon');
-    initializePasswordToggle('toggle-confirm-password', 'confirm_password', 'confirm-password-icon');
+
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();

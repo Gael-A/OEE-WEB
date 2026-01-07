@@ -18,4 +18,5 @@ function initializePasswordToggle(toggleId, inputId, iconId) {
 document.addEventListener('DOMContentLoaded', function () {
     initializePasswordToggle('toggle-password', 'password', 'password-icon');
     initializePasswordToggle('toggle-confirm-password', 'confirm_password', 'confirm-password-icon');
+    initializePasswordToggle('toggle-new-password', 'new_password', 'new-password-icon');
 });
