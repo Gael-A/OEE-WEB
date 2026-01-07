@@ -112,8 +112,25 @@ def daily_production_report():
 
     part_nos = []
     if pan_id:
-        cursor.execute("SELECT part_no FROM part_no_rates WHERE pan_id = %s;", (pan_id,))
-        part_nos = [row["part_no"] for row in cursor.fetchall()]
+        cursor.execute("SELECT pan_id, business_id FROM production_areas WHERE pan_id = %s;", (pan_id,))
+        business_id_result = cursor.fetchone()
+        business_id = business_id_result["business_id"] if business_id_result else None
+
+        if business_id:
+            cursor.execute(
+                """
+                SELECT
+                    pnr.part_no
+                FROM part_no_rates pnr
+                INNER JOIN production_areas pa
+                    ON pnr.pan_id = pa.pan_id
+                INNER JOIN business_units bu
+                    ON pa.business_id = bu.business_id
+                WHERE bu.business_id = %s;
+                """, 
+                (business_id,)
+            )
+            part_nos = [row["part_no"] for row in cursor.fetchall()]
 
     cursor.execute("SELECT suggestion, priority FROM production_report_templates ORDER BY CASE priority WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Low' THEN 3 ELSE 4 END;")
     suggestions = cursor.fetchall()
