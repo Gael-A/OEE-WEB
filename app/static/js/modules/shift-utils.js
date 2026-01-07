@@ -8,36 +8,3 @@ export function setShiftByCurrentTime(setShiftValue) {
 
     setShiftValue(shift);
 }
-
-/*
-Civilización/Imperio    —   Raza
------------------------- -------------------------
-Egipto islámico         —    
-Romana Bizantina        —   Aquas Centro, 
-Maya Clásico/Posclásico —   Caelums
-Vikinga                 —   Aquas Noreste
-Heian / Song            —   Terra Fungos
-Europa Medieval         —   Terra Faunas Occidente
-
------------------------- -------------------------
-
-Civilización/Imperio/Período:
-    Egipto Islámico
-    Romana Bizantina
-    Maya Clásico/Posclásico
-    Vikinga
-    Heian / Song
-    Europa Medieval
-
-Razas:
-    Aquas
-    Terra Faunas Oriente
-    Terra Faunas Occidente
-    Terra Floras
-    Terra Fungos
-    Caelums
-    Umbras
-    Humanos
-
-
-*/
