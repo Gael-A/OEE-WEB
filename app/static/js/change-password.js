@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmPassword = document.getElementById('confirm_password').value;
 
         if (newPassword !== confirmPassword) {
-            showToast(window.translations.error_passwords_do_not_match || 'Las contraseñas nuevas no coinciden.', false);
+            showToast(window.translations.error_passwords_do_not_match, false);
             return;
         }
 
@@ -22,14 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const isLongEnough = newPassword.length >= 8;
 
         if (!isLongEnough || !hasUpperCase || !hasNumber) {
-            showToast(window.translations.register_error_password_requirements || 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.', false);
+            showToast(window.translations.register_error_password_requirements, false);
             return;
         }
 
         const oldPassword = await customPromptPassword(
-            window.translations.prompt_enter_old_password || 'Para continuar, ingresa tu contraseña actual.',
-            window.translations.prompt_confirm_identity || 'Confirmar Identidad',
-            window.translations.change_password_old_placeholder || 'Contraseña actual'
+            window.translations.prompt_enter_old_password,
+            window.translations.prompt_confirm_identity,
+            window.translations.change_password_old_placeholder
         );
 
         if (oldPassword === null) { // El usuario canceló el diálogo
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!oldPassword) {
-            showToast(window.translations.error_old_password_required || 'La contraseña actual es obligatoria.', false);
+            showToast(window.translations.error_old_password_required, false);
             return;
         }
 
@@ -57,10 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast(result.message, true);
                 setTimeout(() => { window.location.href = result.redirect_url; }, 1500);
             } else {
-                showToast(result.error || 'Ocurrió un error.', false);
+                showToast(result.error, false);
             }
         } catch (error) {
-            showToast(window.translations.error_generic || 'Error de conexión con el servidor.', false);
+            showToast(window.translations.error_generic, false);
         }
     });
 });
