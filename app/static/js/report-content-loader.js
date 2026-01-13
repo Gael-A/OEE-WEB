@@ -18,8 +18,9 @@ const DailyReportController = (function () {
         return Number.isFinite(n) ? n : 0;
     }
 
+    // NOTE: name kept for compatibility with existing calls. Now rounds to nearest integer.
     function roundToNearestFive(value) {
-        return Math.round(value / 5) * 5;
+        return Math.round(Number(value) || 0);
     }
 
     function parseMetaFromText(metaText) {
@@ -28,21 +29,27 @@ const DailyReportController = (function () {
         return safeNumber(parts[0]);
     }
 
-    function getAdjustedTargetForInterval(targetPerHour, interval, panSchedule) {
-        if (!interval) return roundToNearestFive(targetPerHour);
+    // Returns raw (fractional) target for the given interval taking panSchedule into account.
+    function getRawTargetForInterval(targetPerHour, interval, panSchedule) {
+        if (!interval) return 0;
         const [startTime, endTime] = interval.split(' - ').map(s => s.trim());
-        let adjusted = targetPerHour;
+        let minutesWorked = 60;
 
         if (panSchedule && panSchedule.length > 0) {
             const match = panSchedule.find(sch =>
-                sch.start_hour.startsWith(startTime) && sch.end_hour.startsWith(endTime)
+                String(sch.start_hour).startsWith(startTime) && String(sch.end_hour).startsWith(endTime)
             );
             if (match && typeof match.duration === 'number') {
-                adjusted = (targetPerHour / 60) * (60 - match.duration);
+                minutesWorked = 60 - match.duration;
             }
         }
 
-        return roundToNearestFive(adjusted);
+        return (Number(targetPerHour) / 60) * minutesWorked;
+    }
+
+    // Backwards-compatible: previously this returned a rounded value. Now it returns the RAW fractional value.
+    function getAdjustedTargetForInterval(targetPerHour, interval, panSchedule) {
+        return getRawTargetForInterval(targetPerHour, interval, panSchedule);
     }
 
     function parseHourToMinutes(hourStr) {
@@ -207,24 +214,63 @@ const DailyReportController = (function () {
             : (window.translations.default_time_interval || '00:00 - 00:00');
         if (horaEl) horaEl.textContent = interval;
 
+        // We'll compute and fill the human-friendly rounded per-interval metas inside recalculateTable()
         const metaDiv = tr.querySelector('.static-info.meta');
-        const adjusted = getAdjustedTargetForInterval(state.formData?.target_per_hour ?? 0, interval, state.panSchedule);
-        if (metaDiv) metaDiv.textContent = `${adjusted}`;
+        if (metaDiv) metaDiv.textContent = `0/0`;
 
         return tr;
+    }
+
+    // Computes interval targets for the CURRENT DOM table rows.
+    // Returns array in same order as rows: [{row, hora, raw, intervalTarget, accumulatedRounded}]
+    function computeIntervalTargetsFromTable() {
+        if (!tableBody) return [];
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        const targetPerHour = state.formData?.target_per_hour ?? 0;
+
+        const rawEntries = rows.map(row => {
+            const hora = row.querySelector('.hora')?.textContent || '';
+            const raw = getRawTargetForInterval(targetPerHour, hora, state.panSchedule);
+            return { row, hora, raw };
+        });
+
+        let accumulated = 0;
+        let lastRounded = 0;
+        const results = [];
+
+        for (const e of rawEntries) {
+            accumulated += e.raw;
+            const roundedNow = Math.round(accumulated);
+            const intervalTarget = roundedNow - lastRounded;
+            lastRounded = roundedNow;
+            results.push({ row: e.row, hora: e.hora, raw: e.raw, intervalTarget, accumulatedRounded: lastRounded });
+        }
+
+        return results;
     }
 
     function recalculateTable() {
         if (!tableBody) return;
         const rows = Array.from(tableBody.querySelectorAll('tr'));
         let runningTotalProd = 0;
-        let runningTotalMeta = 0;
 
-        rows.forEach(row => {
-            const metaInput = row.querySelector('input.meta');
+        // Compute interval targets from the whole table (this handles partial hours correctly)
+        const targets = computeIntervalTargetsFromTable();
+
+        let runningTotalMeta = 0; // will be taken from accumulatedRounded
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const targetInfo = targets[i] || { intervalTarget: 0, accumulatedRounded: 0 };
+
             const metaDiv = row.querySelector('div.static-info.meta');
-            const metaValue = parseMetaFromText(metaInput ? metaInput.value : (metaDiv ? metaDiv.textContent : '0'));
-            runningTotalMeta += metaValue;
+            const metaInput = row.querySelector('input.meta');
+
+            const metaValue = targetInfo.intervalTarget;
+            runningTotalMeta = targetInfo.accumulatedRounded;
+
+            if (metaDiv) metaDiv.textContent = `${metaValue}/${runningTotalMeta}`;
+            if (metaInput) metaInput.value = `${metaValue}/${runningTotalMeta}`;
 
             const prodInput = row.querySelector('input.prod');
             const prodDiv = row.querySelector('div.static-info.prod');
@@ -243,9 +289,7 @@ const DailyReportController = (function () {
 
             const acumEl = row.querySelector('.acum');
             if (acumEl) acumEl.textContent = runningTotalProd;
-
-            if (metaDiv) metaDiv.textContent = `${metaValue}/${runningTotalMeta}`;
-        });
+        }
     }
 
     function onTableClick(event) {
@@ -465,10 +509,21 @@ const DailyReportController = (function () {
         }
     }
 
+    // Compute target for this specific row element by recomputing the table's interval targets
     function getAdjustedTargetForRowFromRowElement(row) {
         const horaText = row.querySelector('.hora')?.textContent;
         if (!horaText) return roundToNearestFive(state.formData?.target_per_hour ?? 0);
-        return getAdjustedTargetForInterval(state.formData?.target_per_hour ?? 0, horaText, state.panSchedule);
+
+        const targets = computeIntervalTargetsFromTable();
+        for (const t of targets) {
+            if (String(t.hora).trim() === String(horaText).trim()) {
+                return t.intervalTarget;
+            }
+        }
+
+        // Fallback: compute raw for that interval and round accumulated as single
+        const raw = getRawTargetForInterval(state.formData?.target_per_hour ?? 0, horaText, state.panSchedule);
+        return Math.round(raw);
     }
 
     function setupReportActionButton(dailyId, isClosingAction) {
@@ -609,7 +664,7 @@ const DailyReportController = (function () {
             if (!allFieldsFilled) return;
 
             const partNoInput = headerRow.querySelector('#no_parte');
-            const partNoValue = partNoInput.value;
+            const partNoValue = partNoInput.value.toUpperCase().trim();
             const validPartNos = window.part_nos.map(p => String(p));
             if (!validPartNos.includes(partNoValue)) {
                 showToast(window.translations.report_invalid_part_no, false);
@@ -620,8 +675,8 @@ const DailyReportController = (function () {
                 pan: state.formData.pan,
                 shift: state.formData.shift,
                 date: state.formData.date,
-                part_no: headerRow.querySelector('#no_parte').value,
-                order: headerRow.querySelector('#orden').value,
+                part_no: headerRow.querySelector('#no_parte').value.toUpperCase().trim(),
+                order: headerRow.querySelector('#orden').value.toUpperCase().trim(),
                 quantity: headerRow.querySelector('#cantidad').value,
                 op_no: headerRow.querySelector('#no_op').value
             };

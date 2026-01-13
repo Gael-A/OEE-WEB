@@ -140,14 +140,16 @@ def _calculate_target_per_hour(cursor, daily_id, part_no, rounded=True, updates=
         op_no = row["op_no"] if row else None
 
     try:
-        op_no = int(op_no)
-        ideal_op_no = int(ideal_op_no)
+        op_no = float(op_no)
+        ideal_op_no = float(ideal_op_no)
         ideal_target_per_hour = float(ideal_target_per_hour)
 
         calculated_value = ideal_target_per_hour / ideal_op_no * op_no
 
         if rounded:
-            return round(calculated_value / 5) * 5
+            # return round(calculated_value / 5) * 5
+            # return math.ceil(calculated_value)
+            return calculated_value
         else:
             return calculated_value
 

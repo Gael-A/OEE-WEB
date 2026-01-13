@@ -69,6 +69,7 @@ def create_daily_report():
         target_per_hour = None
         if part_no:
             target_per_hour = _calculate_target_per_hour(cursor, daily_report_id, part_no, True, updates={"op_no": op_no})
+            real_target_per_hour = _calculate_target_per_hour(cursor, daily_report_id, part_no, False, updates={"op_no": op_no})
 
         conn.commit()
 
@@ -79,6 +80,7 @@ def create_daily_report():
                     "daily_id": daily_report_id,
                     "last_end_hour": last_end_hour,
                     "target_per_hour": target_per_hour,
+                    "real_target_per_hour": real_target_per_hour,
                 }
             ),
             201,
@@ -123,6 +125,7 @@ def get_open_daily_report():
         target_per_hour = None
         if report_header.get("part_no"):
             target_per_hour = _calculate_target_per_hour(cursor, report_header["id"], report_header["part_no"])
+            real_target_per_hour = _calculate_target_per_hour(cursor, report_header["id"], report_header["part_no"], False)
 
         daily_report_id = report_header["id"]
 
@@ -203,7 +206,8 @@ def get_open_daily_report():
             "hourly_rows": hourly_rows,
             "last_end_hour": last_end_hour,
             "last_update_timestamp": last_update_timestamp,
-            "target_per_hour": target_per_hour
+            "target_per_hour": target_per_hour,
+            "real_target_per_hour": real_target_per_hour
         }), 200
 
     except Exception as e:
