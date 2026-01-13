@@ -911,53 +911,40 @@ def get_report_attribute_data():
 
                 for dt in get_week_dates(date):
                     cursor.execute(
-                        f"""
-                        SELECT DISTINCT id, shift, created_at
-                        FROM sql_xct_db.daily_production_report
-                        WHERE date = %s
-                            AND pan = %s
-                            AND shift IN ({','.join(['%s'] * len(shift_values))})
-                        ORDER BY created_at ASC
+                        """
+                        SELECT
+                            ssr.first_piece_at,
+                            ssr.first_piece_comment,
+                            dpr.shift
+                        FROM sql_xct_db.shift_start_report ssr
+                        INNER JOIN sql_xct_db.daily_production_report dpr
+                            ON ssr.daily_id = dpr.id
+                        WHERE
+                            dpr.date = %s
+                            AND dpr.pan = %s
+                            AND dpr.shift = %s
+                        ORDER BY ssr.id DESC
                         LIMIT 1;
                         """,
-                        (dt, pan, *shift_values),
+                        (dt, pan, shift),
                     )
 
-                    daily_report = cursor.fetchone()
+                    row = cursor.fetchone()
 
-                    if daily_report:
-                        daily_id = daily_report["id"]
-                        report_shift = daily_report["shift"]
-
-                        cursor.execute(
-                            """
-                            SELECT first_piece_at, first_piece_comment
-                            FROM sql_xct_db.shift_start_report
-                            WHERE daily_id = %s;
-                            """,
-                            (daily_id,),
-                        )
-
-                        row = cursor.fetchone()
-
-                        first_piece_at = timedelta_to_hhmm(row["first_piece_at"]) if row else None
-
-                        results.append({
-                            "id": f"{get_weekday(dt, language)['name']}-{SHIFT_TEXT[language]} {report_shift}",
-                            "start_shift": first_piece_at,
-                            "comment": row["first_piece_comment"] if row else None,
-                            "day": get_weekday(dt)['name'].lower(),
-                            "target": SHIFT_TARGETS[shift]
-                        })
-                    
+                    if row:
+                        first_piece_at = timedelta_to_hhmm(row["first_piece_at"])
+                        comment = row["first_piece_comment"]
                     else:
-                        results.append({
-                            "id": f"{get_weekday(dt, language)['name']}-{SHIFT_TEXT[language]} {shift}",
-                            "start_shift": None,
-                            "comment": "S/C",
-                            "day": get_weekday(dt)['name'].lower(),
-                            "target": SHIFT_TARGETS[shift]
-                        })
+                        first_piece_at = None
+                        comment = "S/C"
+
+                    results.append({
+                        "id": f"{get_weekday(dt, language)['name']}-{SHIFT_TEXT[language]} {shift}",
+                        "start_shift": first_piece_at,
+                        "comment": comment,
+                        "day": get_weekday(dt)['name'].lower(),
+                        "target": SHIFT_TARGETS[str(shift)]
+                    })
 
                 conn.close()
                 return jsonify(results)
@@ -1409,9 +1396,9 @@ def create_shift_start_report():
         if conn:
             conn.close()
 
-@bp.route("/get-shift-start-report", methods=["GET"])
+@bp.route("/get-shift-start-report-by-daily-id", methods=["GET"])
 @login_required
-def get_shift_start_report():
+def get_shift_start_report_by_daily_id():
     daily_id = request.args.get("daily_id")
 
     if not daily_id:
@@ -1439,3 +1426,77 @@ def get_shift_start_report():
         if conn:
             conn.close()
 
+@bp.route("/get-shift-start-report", methods=["GET"])
+@login_required
+def get_shift_start_report():
+    date_str = request.args.get("date")
+    pan = request.args.get("pan")
+    shift = request.args.get("shift")
+
+    if not all([date_str, pan, shift]):
+        return jsonify({"error": "Faltan parámetros (date, pan, shift)."}), 400
+
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        """
+        cursor.execute(""
+            SELECT dpr.id AS daily_id
+            FROM daily_production_report AS dpr
+            WHERE dpr.date = %s AND dpr.pan = %s AND dpr.shift = %s
+        "", (date_str, pan, shift))
+        daily_report = cursor.fetchone()
+        """
+
+        cursor.execute("""
+            SELECT
+                ssr.id AS shift_start_id,
+                ssr.first_piece_at,
+                ssr.first_piece_comment,
+                ssr.no_op_start,
+                ssr.no_op_balancing,
+                ssr.no_op_comment,
+                ssr.is_line_wet,
+                ssr.is_line_wet_comment,
+
+                dpr.id AS daily_id,
+                dpr.date,
+                dpr.pan,
+                dpr.part_no,
+                dpr.`order`,
+                dpr.quantity,
+                dpr.op_no,
+                dpr.shift,
+                dpr.is_closed,
+                dpr.created_at
+            FROM shift_start_report ssr
+            INNER JOIN daily_production_report dpr
+                ON ssr.daily_id = dpr.id
+            WHERE 
+                `date` = %s AND
+                pan = %s AND
+                shift = %s
+            ORDER BY shift_start_id DESC
+            LIMIT 1;
+            """, (date_str, pan, shift))
+        daily_report = cursor.fetchone()
+
+        if not daily_report:
+            return jsonify({"report": None}), 404
+
+        daily_id = daily_report["daily_id"]
+        cursor.execute("SELECT * FROM shift_start_report WHERE daily_id = %s;", (daily_id,))        
+        report = cursor.fetchone()
+        if report and report.get("first_piece_at"):
+            report["first_piece_at"] = str(report["first_piece_at"])
+        if not report:
+            return jsonify({"report": None}), 404
+        return jsonify({"report": report}), 200
+    except Exception as e:
+        return jsonify({"error": f"Error interno del servidor: {e}"}), 500
+    finally:
+        if conn:
+            conn.close()
+            

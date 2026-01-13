@@ -237,9 +237,14 @@ async function loadMachines(formData) {
     }
 }
 
-async function loadDailyStartInfo(dailyId) {
+async function loadDailyStartInfo(data) {
     try {
-        const responseStartShift = await fetch(`/get-shift-start-report?daily_id=${dailyId}`, {
+        // pan, date and shift should be used to fetch the start shift report
+        const responseStartShift = await fetch(`/get-shift-start-report?${new URLSearchParams({
+            pan: data.pan,
+            shift: data.shift,
+            date: data.date
+        })}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -367,12 +372,12 @@ export async function handleInitialLoad(state) {
         if (machinesTitle) machinesTitle.textContent = window.translations.viewer_machines_operating_now;
         let dailyId = await loadHistoryReports(dataToLoad);
         if (dailyId) {
-            await loadDailyStartInfo(dailyId);
+            await loadDailyStartInfo(dataToLoad);
             loadCurrentReport(dataToLoad);
         } else {
             dailyId = await loadCurrentReport(dataToLoad);
             if (dailyId) {
-                await loadDailyStartInfo(dailyId);
+                await loadDailyStartInfo(dataToLoad);
             }
         }
     } else {
@@ -380,7 +385,7 @@ export async function handleInitialLoad(state) {
         if (machinesTitle) machinesTitle.textContent = window.translations.viewer_last_machines_operating;
         let dailyId = await loadHistoryReports(dataToLoad);
         if (dailyId) {
-            await loadDailyStartInfo(dailyId);
+            await loadDailyStartInfo(dataToLoad);
         }
     }
     loadDailyResults(dataToLoad);
@@ -394,7 +399,7 @@ export async function handlePastModeUpdate(state) {
     if (machinesTitle) machinesTitle.textContent = window.translations.viewer_last_machines_operating;
     let dailyId = await loadHistoryReports(state.formData);
     if (dailyId) {
-        await loadDailyStartInfo(dailyId);
+        await loadDailyStartInfo(dataToLoad);
     }
     loadDailyResults(state.formData);
     loadMachines(state.formData);
@@ -411,12 +416,12 @@ export async function handleCurrentModeUpdate(state) {
     if (machinesTitle) machinesTitle.textContent = window.translations.viewer_machines_operating_now;
     let dailyId = await loadHistoryReports(state.currentFormData);
     if (dailyId) {
-        await loadDailyStartInfo(dailyId);
+        await loadDailyStartInfo(dataToLoad);
         loadCurrentReport(state.currentFormData);
     } else {
         dailyId = await loadCurrentReport(state.currentFormData);
         if (dailyId) {
-            await loadDailyStartInfo(dailyId);
+            await loadDailyStartInfo(dataToLoad);
         }
     }
     loadDailyResults(state.currentFormData);

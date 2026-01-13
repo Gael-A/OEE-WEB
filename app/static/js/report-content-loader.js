@@ -776,6 +776,11 @@ const DailyReportController = (function () {
                 initializeReportTable(state.formData, state.dailyReportId, [], lastEndHour);
                 setupReportActionButton(state.dailyReportId, false);
                 startMissingStartReportCountdown();
+                openExistingStartShiftReport(new URLSearchParams({
+                    pan: state.formData.pan,
+                    shift: state.formData.shift,
+                    date: state.formData.date
+                }));
             } catch (err) {
                 console.error(window.translations.console_error_creating_report, err);
                 showToast(window.translations.report_connection_error_creating);
@@ -784,6 +789,104 @@ const DailyReportController = (function () {
 
         headerCheckButton.removeEventListener('click', handler);
         headerCheckButton.addEventListener('click', handler);
+    }
+
+    async function openExistingStartShiftReport(params){
+        try {
+
+            const responseStartShift = await fetch(`/get-shift-start-report?${params.toString()}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (responseStartShift.status === 404) {
+                document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
+                document.getElementById('close-start-report-button').classList.remove('hidden');
+                console.log(window.translations.console_info_no_shift_start_report);
+            } else {
+                const dataStartShift = await responseStartShift.json().catch(() => ({}));
+                
+                if (!responseStartShift.ok) {
+                    console.error(window.translations.console_error_getting_report, dataStartShift.error);
+                    return;
+                }
+
+                // Si existe el reporte
+                const report = dataStartShift.report;
+
+                console.log(window.translations.console_info_shift_start_report, report);
+
+                // Aquí ya puedes colocar los valores en los campos si lo deseas:
+                document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
+                document.getElementById('close-start-report-button').classList.add('hidden');
+
+                // Agrupamos todos los elementos que vamos a usar
+                const el = {
+                    hour: document.getElementById('first_piece_at_hour'),
+                    minute: document.getElementById('first_piece_at_minute'),
+                    meridiem: document.getElementById('first_piece_at_meridiem'),
+                    comment: document.getElementById('first_piece_comment'),
+
+                    noOpStart: document.getElementById('no_op_start'),
+                    noOpBalancing: document.getElementById('no_op_balancing'),
+                    noOpBalancingComment: document.getElementById('no_op_balancing_comment'),
+
+                    isLineWet: document.getElementById('is_line_wet'),
+                    lineWetComment: document.getElementById('line_wet_comment')
+                };
+
+                // Deshabilitar inputs en bloque
+                [
+                    el.hour, el.minute, el.meridiem, el.comment,
+                    el.noOpStart, el.noOpBalancing, el.noOpBalancingComment,
+                    el.isLineWet, el.lineWetComment
+                ].forEach(input => input.disabled = true);
+
+                // Parseo de hora
+                let [firstHour = '', firstMinute = ''] = (report.first_piece_at || (window.translations.default_time || '00:00')).split(':');
+
+                let meridiem = firstHour > 12 ? (window.translations.time_pm || "PM") : (window.translations.time_am || "AM");
+                if (firstHour > 12) {
+                    firstHour = String(firstHour - 12).padStart(2, '0');
+                }
+
+                // Asignación de valores
+                el.hour.value = firstHour;
+                el.minute.value = firstMinute;
+                el.meridiem.value = meridiem;
+
+                el.comment.value = report.first_piece_comment || "";
+
+                el.noOpStart.value = report.no_op_start || "";
+                el.noOpBalancing.value = report.no_op_balancing || "";
+                el.noOpBalancingComment.value = report.no_op_comment || "";
+
+                el.isLineWet.selectedIndex = report.is_line_wet;
+                el.lineWetComment.value = report.is_line_wet_comment || "";
+
+                async function triggerInitialValidation(inputs) {
+                    inputs.forEach(i => i.classList.add('initial-loaded'));
+
+                    for (const input of inputs) {
+                        input.dispatchEvent(new Event('change'));
+                        input.dispatchEvent(new Event('input'));
+                    }
+
+                    await Promise.resolve();
+
+                    inputs.forEach(i => i.classList.remove('initial-loaded'));
+                }
+
+                await triggerInitialValidation([
+                    el.hour, el.minute, el.meridiem,
+                    el.noOpStart, el.noOpBalancing,
+                    el.isLineWet
+                ]);
+            }
+
+        } catch (error) {
+            console.error(window.translations.console_error_fetch, error);
+        }
     }
 
     async function loadReportContent(formData) {
@@ -836,105 +939,8 @@ const DailyReportController = (function () {
                 document.getElementById('close-start-report-button').classList.add('hidden');
             }
 
-            try {
-                const dailyId = state.dailyReportId || data.report_header.id;
+            openExistingStartShiftReport(params);
 
-                if (dailyId) {
-
-                    const responseStartShift = await fetch(`/get-shift-start-report?daily_id=${dailyId}`, {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-
-                    if (responseStartShift.status === 404) {
-                        document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
-                        document.getElementById('close-start-report-button').classList.remove('hidden');
-                        console.log(window.translations.console_info_no_shift_start_report);
-                    } else {
-                        const dataStartShift = await responseStartShift.json().catch(() => ({}));
-                        
-                        if (!responseStartShift.ok) {
-                            console.error(window.translations.console_error_getting_report, dataStartShift.error);
-                            return;
-                        }
-
-                        // Si existe el reporte
-                        const report = dataStartShift.report;
-
-                        console.log(window.translations.console_info_shift_start_report, report);
-
-                        // Aquí ya puedes colocar los valores en los campos si lo deseas:
-                        document.querySelector('.start-report-table tbody').style.display = 'table-row-group';
-                        document.getElementById('close-start-report-button').classList.add('hidden');
-
-                        // Agrupamos todos los elementos que vamos a usar
-                        const el = {
-                            hour: document.getElementById('first_piece_at_hour'),
-                            minute: document.getElementById('first_piece_at_minute'),
-                            meridiem: document.getElementById('first_piece_at_meridiem'),
-                            comment: document.getElementById('first_piece_comment'),
-
-                            noOpStart: document.getElementById('no_op_start'),
-                            noOpBalancing: document.getElementById('no_op_balancing'),
-                            noOpBalancingComment: document.getElementById('no_op_balancing_comment'),
-
-                            isLineWet: document.getElementById('is_line_wet'),
-                            lineWetComment: document.getElementById('line_wet_comment')
-                        };
-
-                        // Deshabilitar inputs en bloque
-                        [
-                            el.hour, el.minute, el.meridiem, el.comment,
-                            el.noOpStart, el.noOpBalancing, el.noOpBalancingComment,
-                            el.isLineWet, el.lineWetComment
-                        ].forEach(input => input.disabled = true);
-
-                        // Parseo de hora
-                        let [firstHour = '', firstMinute = ''] = (report.first_piece_at || (window.translations.default_time || '00:00')).split(':');
-
-                        let meridiem = firstHour > 12 ? (window.translations.time_pm || "PM") : (window.translations.time_am || "AM");
-                        if (firstHour > 12) {
-                            firstHour = String(firstHour - 12).padStart(2, '0');
-                        }
-
-                        // Asignación de valores
-                        el.hour.value = firstHour;
-                        el.minute.value = firstMinute;
-                        el.meridiem.value = meridiem;
-
-                        el.comment.value = report.first_piece_comment || "";
-
-                        el.noOpStart.value = report.no_op_start || "";
-                        el.noOpBalancing.value = report.no_op_balancing || "";
-                        el.noOpBalancingComment.value = report.no_op_comment || "";
-
-                        el.isLineWet.selectedIndex = report.is_line_wet;
-                        el.lineWetComment.value = report.is_line_wet_comment || "";
-
-                        async function triggerInitialValidation(inputs) {
-                            inputs.forEach(i => i.classList.add('initial-loaded'));
-
-                            for (const input of inputs) {
-                                input.dispatchEvent(new Event('change'));
-                                input.dispatchEvent(new Event('input'));
-                            }
-
-                            await Promise.resolve();
-
-                            inputs.forEach(i => i.classList.remove('initial-loaded'));
-                        }
-
-                        await triggerInitialValidation([
-                            el.hour, el.minute, el.meridiem,
-                            el.noOpStart, el.noOpBalancing,
-                            el.isLineWet
-                        ]);
-                    }
-                }
-
-            } catch (error) {
-                console.error(window.translations.console_error_fetch, error);
-            }
         } catch (e) {
             console.error(window.translations.console_error_loading_open_report, e);
             showToast(window.translations.report_connection_error_creating);
