@@ -120,9 +120,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         const oldCurrentFormData = state.currentFormData;
         const now = new Date();
 
-        const yy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        const dd = String(now.getDate()).padStart(2, '0');
+        const CUT_MINUTES = 30; // 00:30
+
+        const adjustedDate = new Date(now);
+        const minutesFromMidnight = now.getHours() * 60 + now.getMinutes();
+
+        if (minutesFromMidnight < CUT_MINUTES) {
+            adjustedDate.setDate(adjustedDate.getDate() - 1);
+        }
+
+        const yy = adjustedDate.getFullYear();
+        const mm = String(adjustedDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(adjustedDate.getDate()).padStart(2, '0');
+
         const todayStr = `${yy}-${mm}-${dd}`;
 
         const totalMins = now.getHours() * 60 + now.getMinutes();
