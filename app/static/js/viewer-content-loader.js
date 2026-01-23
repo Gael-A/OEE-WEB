@@ -399,7 +399,7 @@ export async function handlePastModeUpdate(state) {
     if (machinesTitle) machinesTitle.textContent = window.translations.viewer_last_machines_operating;
     let dailyId = await loadHistoryReports(state.formData);
     if (dailyId) {
-        await loadDailyStartInfo(dataToLoad);
+        await loadDailyStartInfo(state.formData);
     }
     loadDailyResults(state.formData);
     loadMachines(state.formData);

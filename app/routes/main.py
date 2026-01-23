@@ -36,6 +36,7 @@ def set_language_from_param():
 
 # Ruta para el dashboard principal
 @bp.route("/dashboard")
+@bp.route("/dashboard/")
 @login_required
 def dashboard():
     pan_id = request.args.get("pan")
