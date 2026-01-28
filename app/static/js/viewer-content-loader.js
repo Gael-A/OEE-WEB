@@ -416,12 +416,12 @@ export async function handleCurrentModeUpdate(state) {
     if (machinesTitle) machinesTitle.textContent = window.translations.viewer_machines_operating_now;
     let dailyId = await loadHistoryReports(state.currentFormData);
     if (dailyId) {
-        await loadDailyStartInfo(dataToLoad);
+        await loadDailyStartInfo(state.currentFormData);
         loadCurrentReport(state.currentFormData);
     } else {
         dailyId = await loadCurrentReport(state.currentFormData);
         if (dailyId) {
-            await loadDailyStartInfo(dataToLoad);
+            await loadDailyStartInfo(state.currentFormData);
         }
     }
     loadDailyResults(state.currentFormData);
