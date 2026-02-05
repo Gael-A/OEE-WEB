@@ -29,7 +29,7 @@ def production_leader_required(f):
             flash("Por favor, inicia sesión para acceder a esta página.", "warning")
             return redirect(url_for('main.login'))
         # Un admin puede acceder a todo lo que un líder puede
-        if session.get('role') not in ['production_leader', 'admin']:
+        if session.get('role') not in ['production_leader', 'supervisor_&_leader', 'admin']:
             flash("No tienes los permisos necesarios para ver esta página.", "danger")
             return redirect(url_for('main.debug_index'))
         return f(*args, **kwargs)
@@ -41,7 +41,7 @@ def supervisor_required(f):
         if 'user_id' not in session:
             flash("Por favor, inicia sesión para acceder a esta página.", "warning")
             return redirect(url_for('main.login'))
-        if session.get('role') not in ['supervisor', 'admin']:
+        if session.get('role') not in ['supervisor', 'supervisor_&_leader', 'admin']:
             flash("No tienes los permisos necesarios para ver esta página.", "danger")
             return redirect(url_for('main.debug_index'))
         return f(*args, **kwargs)

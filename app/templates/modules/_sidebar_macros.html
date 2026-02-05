@@ -18,7 +18,7 @@
                 alt="{{ translations.alt_dashboard }}" title="{{ translations.title_dashboard | upper }}"
                 onclick="window.location.href=`{{ url_for('main.dashboard') }}`">
 
-            {% if session.get('role') in ['admin', 'production_leader'] %}
+            {% if session.get('role') in ['admin', 'production_leader', 'supervisor_&_leader'] %}
             <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-add.svg') }}"
                 alt="{{ translations.alt_hourly_report_link }}" title="{{ translations.title_hourly_report_link | upper }}"
                 onclick="window.location.href=`{{ url_for('main.daily_production_report') }}`">
@@ -28,7 +28,7 @@
                 onclick="window.location.href=`{{ url_for('main.production_plan') }}`">
             {% endif %}
 
-            {% if session.get('role') in ['admin', 'supervisor'] %}
+            {% if session.get('role') in ['admin', 'supervisor', 'supervisor_&_leader', 'supervisor_&_leader'] %}
             <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-view.svg') }}"
                 alt="{{ translations.alt_view_reports }}" title="{{ translations.title_view_reports | upper }}"
                 onclick="window.location.href=`{{ url_for('main.viewer_daily_production_report') }}`">
@@ -104,7 +104,7 @@
                 <span>{{ translations.title_dashboard | upper }}</span>
             </div>
 
-            {% if session.get('role') in ['admin', 'production_leader'] %}
+            {% if session.get('role') in ['admin', 'production_leader', 'supervisor_&_leader'] %}
             <div onclick="window.location.href=`{{ url_for('main.daily_production_report') }}`" class="sidebar-option">
                 <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-add.svg') }}"
                     alt="{{ translations.alt_hourly_report_link }}">
@@ -118,7 +118,7 @@
             </div>
             {% endif %}
 
-            {% if session.get('role') in ['admin', 'supervisor'] %}
+            {% if session.get('role') in ['admin', 'supervisor', 'supervisor_&_leader', 'supervisor_&_leader'] %}
             <div onclick="window.location.href=`{{ url_for('main.viewer_daily_production_report') }}`" class="sidebar-option">
                 <img class="sidebar-option-icon" src="{{ url_for('static', filename='svg/icon-report-view.svg') }}"
                     alt="{{ translations.alt_view_reports }}">
