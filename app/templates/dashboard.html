@@ -134,7 +134,7 @@
 
     {% include 'modules/menus.html' %}
 
-    {% if session.get('role') == 'admin' and not is_screen_mode %}
+    {% if session.get('role') == 'admin' and not is_screen_mode and false %}
     {% include 'modules/chatbot.html' %}
     {% endif %}
 

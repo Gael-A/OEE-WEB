@@ -13,7 +13,8 @@ function formatDuration(seconds) {
 
 window.renderTimeline = async function (pan, shift, date, machine, section, role, isScheduled) {
     let url = "";
-    const urlPrefix = role === 'admin' ? 'debug-' : '';
+    // const urlPrefix = role === 'admin' ? 'debug-' : '';
+    const urlPrefix = '';
     if (section.includes("pan")) {
         url = `${urlPrefix}status-data-tl-pan?pan=${pan}&shift=${shift}&date=${date}`;
     } else {
