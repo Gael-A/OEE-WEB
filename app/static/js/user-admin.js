@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
             user: translations.user_role_user || 'User',
             admin: translations.user_role_admin || 'Admin',
             supervisor: translations.user_role_supervisor || 'Supervisor',
+            'supervisor_&_leader': 'Both',
             production_leader: translations.user_role_production_leader || 'Production Leader'
         };
 
@@ -167,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
             user: translations.user_role_user || 'User',
             production_leader: translations.user_role_production_leader || 'Production Leader',
             supervisor: translations.user_role_supervisor || 'Supervisor',
+            'supervisor_&_leader': 'Both',
             admin: translations.user_role_admin || 'Admin'
         };
         const addUserRow = userTableBody.insertRow();
@@ -180,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <select id="new-user-role" name="role">
                     <option value="user" selected>${roles.user}</option>
                     <option value="production_leader">${roles.production_leader}</option>
+                    <option value="supervisor_&_leader">${roles["supervisor_&_leader"]}</option>
                     <option value="supervisor">${roles.supervisor}</option>
                     <option value="admin">${roles.admin}</option>
                 </select>
