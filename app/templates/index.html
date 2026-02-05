@@ -58,11 +58,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>Índice de Navegación (Debug)</h1>
+        <h1>404</h1>
         <ul>
             <li><a href="{{ url_for('main.dashboard') }}">Dashboard Principal</a></li>
-            <li><a href="{{ url_for('main.daily_production_report') }}">Crear Reporte Diario</a></li>
             {% if session.get('role') == 'admin' %}
+            <li><a href="{{ url_for('main.daily_production_report') }}">Crear Reporte Diario</a></li>
             <li><a href="{{ url_for('main.viewer_daily_production_report') }}">Ver Reportes Diarios</a></li>
             {% endif %}
             <li><a href="{{ url_for('auth.logout_user') }}">Cerrar Sesión</a></li>
