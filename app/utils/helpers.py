@@ -513,7 +513,7 @@ def process_machine_logs_to_blocks(logs, working_logs, machine_id, start, end):
     total_uptime = timedelta()
     total_stops = 0
 
-    if session.get("role") == "admin":
+    if session.get("role") == "admin" and False:
         # Lógica para el rol 'admin'
         for i, block in enumerate(blocks):
             start_b = datetime.strptime(block["start_time"], "%Y-%m-%d %H:%M:%S")
