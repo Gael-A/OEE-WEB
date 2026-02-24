@@ -735,16 +735,20 @@ def get_hourly_by_daily(daily_id):
     conn = None
     try:
         conn = get_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor()  # ya es dictionary según dijiste
+
         cursor.execute("""
             SELECT id, start_hour, end_hour, target, production, defects, incident_notes
             FROM hourly_production_report
             WHERE daily_id = %s
             ORDER BY start_hour
         """, (daily_id,))
+
         rows = cursor.fetchall()
 
         def format_timedelta(td):
+            if td is None:
+                return None
             total_seconds = int(td.total_seconds())
             hours = total_seconds // 3600
             minutes = (total_seconds % 3600) // 60
@@ -752,19 +756,29 @@ def get_hourly_by_daily(daily_id):
             return f"{hours:02}:{minutes:02}:{seconds:02}"
 
         accumulated = 0
+
         for row in rows:
-            if row["start_hour"]:
+
+            # Convertir TIME -> string (incluye 00:00:00)
+            if row["start_hour"] is not None:
                 row["start_hour"] = format_timedelta(row["start_hour"])
-            if row["end_hour"]:
+
+            if row["end_hour"] is not None:
                 row["end_hour"] = format_timedelta(row["end_hour"])
 
-            accumulated += row["production"] or 0
+            production = row["production"] or 0
+            target = row["target"] or 0
+
+            accumulated += production
+
             row["accumulated"] = accumulated
-            row["difference"] = (row["production"] or 0) - (row["target"] or 0)
+            row["difference"] = production - target
 
         return jsonify({"rows": rows}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
     finally:
         if conn:
             conn.close()
