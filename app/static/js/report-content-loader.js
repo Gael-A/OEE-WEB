@@ -1,4 +1,4 @@
-import { getShiftTimes, fetchPanSchedule } from './modules/shift-schedules.js';
+import { getShiftTimes, fetchPanSchedule, getShiftBreaksAdjust } from './modules/shift-schedules.js';
 
 const DailyReportController = (function () {
     const state = {
@@ -9,6 +9,8 @@ const DailyReportController = (function () {
         effectiveShiftTimes: [],
         initializing: true
     };
+
+    state.shiftBreaksAdjust = getShiftBreaksAdjust();
 
     let tableBody;
     let template;
@@ -31,22 +33,39 @@ const DailyReportController = (function () {
 
     // Returns raw (fractional) target for the given interval taking panSchedule into account.
     function getRawTargetForInterval(targetPerHour, interval, panSchedule) {
+
         if (!interval) return 0;
+
+        targetPerHour = Number(targetPerHour);
+
         const [startTime, endTime] = interval.split(' - ').map(s => s.trim());
+
         let minutesWorked = 60;
 
-        if (panSchedule && panSchedule.length > 0) {
+        if (panSchedule?.length) {
+
             const match = panSchedule.find(sch =>
-                String(sch.start_hour).startsWith(startTime) && String(sch.end_hour).startsWith(endTime)
+                String(sch.start_hour).startsWith(startTime) &&
+                String(sch.end_hour).startsWith(endTime)
             );
-            if (match && typeof match.duration === 'number') {
-                minutesWorked = 60 - match.duration;
+
+            if (match?.duration != null) {
+                minutesWorked = 60 - Number(match.duration);
             }
+
         }
+        
+        const multiplier = Number(minutesWorked / 60);
+        const base = targetPerHour * multiplier;
 
-        return (Number(targetPerHour) / 60) * minutesWorked;
+        const extraPiecesAdjustMultiplier = multiplier * state.shiftBreaksAdjust;
+        const extraPiecesAdjust = targetPerHour * extraPiecesAdjustMultiplier;
+
+        console.log(state.shiftBreaksAdjust)
+        console.log('getRawTargetForInterval', base, extraPiecesAdjust);
+
+        return base + extraPiecesAdjust;
     }
-
     // Backwards-compatible: previously this returned a rounded value. Now it returns the RAW fractional value.
     function getAdjustedTargetForInterval(targetPerHour, interval, panSchedule) {
         return getRawTargetForInterval(targetPerHour, interval, panSchedule);
@@ -928,6 +947,8 @@ const DailyReportController = (function () {
                 state.rows = (data.hourly_rows || []).map(r => Object.assign({}, r));
                 const allShiftTimes = getShiftTimes(formData.shift) || [];
                 state.effectiveShiftTimes = computeEffectiveShiftTimes(allShiftTimes, data.last_end_hour, state.rows);
+        
+                state.shiftBreaksAdjust = getShiftBreaksAdjust(formData.shift);
 
                 renderTable(true);
 
@@ -963,6 +984,8 @@ const DailyReportController = (function () {
         dailyReportModule.init(dailyReportId);
         state.panSchedule = state.panSchedule || [];
         state.rows = (existingRows || []).map(r => Object.assign({}, r));
+
+        state.shiftBreaksAdjust = getShiftBreaksAdjust(formData.shift);
 
         const allShiftTimes = getShiftTimes(formData.shift) || [];
         state.effectiveShiftTimes = computeEffectiveShiftTimes(allShiftTimes, lastEndHour, state.rows);

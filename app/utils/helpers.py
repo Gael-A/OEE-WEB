@@ -115,10 +115,7 @@ def shift_time(shift_number):
         return 24.0
 
 def _calculate_target_per_hour(cursor, daily_id, part_no, rounded=True, updates=None):
-    """
-    Retorna el target_per_hour para el reporte daily_id y part_no.
-    Si updates incluye 'op_no', lo toma de ahí; si no, lo lee de daily_production_report.
-    """
+
     cursor.execute(
         "SELECT ideal_op_no, ideal_target_per_hour FROM part_no_rates WHERE part_no = %s",
         (part_no,),
@@ -127,28 +124,53 @@ def _calculate_target_per_hour(cursor, daily_id, part_no, rounded=True, updates=
     if not rate_info:
         return None
 
-    ideal_op_no = rate_info["ideal_op_no"]
-    ideal_target_per_hour = rate_info["ideal_target_per_hour"]
+    ideal_op_no = float(rate_info["ideal_op_no"])
+    ideal_target_per_hour = float(rate_info["ideal_target_per_hour"])
+
+    pan = None
+    shift = None
 
     if updates and "op_no" in updates:
         op_no = updates["op_no"]
     else:
         cursor.execute(
-            "SELECT op_no FROM daily_production_report WHERE id = %s", (daily_id,)
+            "SELECT op_no, pan, shift FROM daily_production_report WHERE id = %s",
+            (daily_id,)
         )
         row = cursor.fetchone()
-        op_no = row["op_no"] if row else None
+        if not row:
+            return None
+
+        op_no = row["op_no"]
+        pan = row["pan"]
+        shift = row["shift"]
 
     try:
         op_no = float(op_no)
-        ideal_op_no = float(ideal_op_no)
-        ideal_target_per_hour = float(ideal_target_per_hour)
+
+        if pan and shift:
+            cursor.execute(
+                """
+                SELECT 
+                    SUM(leader) +
+                    SUM(inspectors) +
+                    SUM(qc_group_leader) +
+                    SUM(water_spider) AS total
+                FROM pan_operators_base
+                WHERE pan_id = %s AND shift = %s
+                """,
+                (pan, shift),
+            )
+
+            result = cursor.fetchone()
+            total_additional_operators = result["total"] if result else 0
+
+            if total_additional_operators:
+                op_no += float(total_additional_operators)
 
         calculated_value = ideal_target_per_hour / ideal_op_no * op_no
 
         if rounded:
-            # return round(calculated_value / 5) * 5
-            # return math.ceil(calculated_value)
             return calculated_value
         else:
             return calculated_value
