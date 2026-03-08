@@ -68,8 +68,8 @@ def create_daily_report():
         
         target_per_hour = None
         if part_no:
-            target_per_hour = _calculate_target_per_hour(cursor, daily_report_id, part_no, True, updates={"op_no": op_no})
-            real_target_per_hour = _calculate_target_per_hour(cursor, daily_report_id, part_no, False, updates={"op_no": op_no})
+            target_per_hour = _calculate_target_per_hour(cursor, daily_report_id, part_no, True, updates={"op_no": op_no, "pan": pan, "shift": shift})
+            real_target_per_hour = _calculate_target_per_hour(cursor, daily_report_id, part_no, False, updates={"op_no": op_no, "pan": pan, "shift": shift})
 
         conn.commit()
 

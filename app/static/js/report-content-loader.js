@@ -774,6 +774,8 @@ const DailyReportController = (function () {
                 const lastEndHour = result.last_end_hour;
                 state.formData.target_per_hour = result.target_per_hour;
 
+                console.log(state.formData.target_per_hour);
+
                 headerRow.querySelectorAll('input').forEach(input => {
                     const staticInfo = document.createElement('div');
                     staticInfo.className = `static-info ${input.className}`;

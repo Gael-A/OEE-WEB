@@ -126,13 +126,19 @@ def _calculate_target_per_hour(cursor, daily_id, part_no, rounded=True, updates=
 
     ideal_op_no = float(rate_info["ideal_op_no"])
     ideal_target_per_hour = float(rate_info["ideal_target_per_hour"])
-
+    
     pan = None
+    if updates and "pan" in updates:
+        pan = updates["pan"]
+
     shift = None
+    if updates and "shift" in updates:
+        shift = updates["shift"]
 
     if updates and "op_no" in updates:
         op_no = updates["op_no"]
-    else:
+
+    if not op_no or not pan or not shift:
         cursor.execute(
             "SELECT op_no, pan, shift FROM daily_production_report WHERE id = %s",
             (daily_id,)
