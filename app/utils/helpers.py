@@ -135,6 +135,7 @@ def _calculate_target_per_hour(cursor, daily_id, part_no, rounded=True, updates=
     if updates and "shift" in updates:
         shift = updates["shift"]
 
+    op_no = None
     if updates and "op_no" in updates:
         op_no = updates["op_no"]
 
