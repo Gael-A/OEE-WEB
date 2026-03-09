@@ -30,7 +30,7 @@ export async function fetchPanSchedule(panId) {
 export function getShiftBreaksAdjust(shift) {
     switch (String(shift)) {
         case '1': return .83 / 9.5;
-        case '2': return .83 / 8.3;
+        case '2': return .83 / 8;
         case '3': return .83 / 5.3;
         default: return 0;
     }
