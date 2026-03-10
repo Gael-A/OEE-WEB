@@ -61,9 +61,6 @@ const DailyReportController = (function () {
         const extraPiecesAdjustMultiplier = multiplier * state.shiftBreaksAdjust;
         const extraPiecesAdjust = targetPerHour * extraPiecesAdjustMultiplier;
 
-        console.log(state.shiftBreaksAdjust)
-        console.log('getRawTargetForInterval', base, extraPiecesAdjust);
-
         return base + extraPiecesAdjust;
     }
     // Backwards-compatible: previously this returned a rounded value. Now it returns the RAW fractional value.
@@ -834,8 +831,6 @@ const DailyReportController = (function () {
 
                 // Si existe el reporte
                 const report = dataStartShift.report;
-
-                console.log(window.translations.console_info_shift_start_report, report);
 
                 // Aquí ya puedes colocar los valores en los campos si lo deseas:
                 document.querySelector('.start-report-table tbody').style.display = 'table-row-group';

@@ -90,7 +90,16 @@ export function getShiftEnd(shift, format) {
     }
 }
 
-export function getShiftFirstPieceAt(shift, format = true) {
+export function getShiftFirstPieceAt(shift, format = true, pan = '') {
+    if (pan == 'CONTINUOUS LINER') {
+        switch (String(shift)) {
+            case '1': return format ? '06:45' : { hours: 7, minutes: 30 };
+            case '2': return format ? '16:35' : { hours: 17, minutes: 20 };
+            case '3': return format ? '00:55' : { hours: 1, minutes: 40 };
+            default: return format ? '--:--' : null;
+        }
+    }
+
     switch (String(shift)) {
         case '1': return format ? '06:45' : { hours: 6, minutes: 45 };
         case '2': return format ? '16:35' : { hours: 16, minutes: 35 };

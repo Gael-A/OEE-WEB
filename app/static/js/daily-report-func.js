@@ -29,7 +29,7 @@ function waitForShiftFirstPiece() {
     return new Promise(resolve => {
         const check = () => {
             if (window.filters?.shift) {
-                cachedShiftFirstPiece = getShiftFirstPieceAt(window.filters.shift, false);
+                cachedShiftFirstPiece = getShiftFirstPieceAt(window.filters.shift, false, window.filters.pan);
                 resolve(cachedShiftFirstPiece);
                 return true;
             }
