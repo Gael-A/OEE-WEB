@@ -911,11 +911,19 @@ def get_report_attribute_data():
 
                 language = session.get("language", "en")
                 
-                SHIFT_TARGETS = {
-                    '1': "6:45",
-                    '2': "16:35",
-                    '3': "00:55"
-                }
+                SHIFT_TARGETS = {}
+                if pan == "CONTINUOUS LINER":
+                    SHIFT_TARGETS = {
+                        '1': "07:30",
+                        '2': "17:20",
+                        '3': "01:40"
+                    }
+                else :                    
+                    SHIFT_TARGETS = {
+                        '1': "6:45",
+                        '2': "16:35",
+                        '3': "00:55"
+                    }
 
                 SHIFT_TEXT = {
                     "es": "Turno",
