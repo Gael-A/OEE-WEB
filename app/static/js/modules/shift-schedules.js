@@ -100,6 +100,15 @@ export function getShiftFirstPieceAt(shift, format = true, pan = '') {
         }
     }
 
+    if (pan == 'FE') {
+        switch (String(shift)) {
+            case '1': return format ? '10:30' : { hours: 10, minutes: 30 };
+            case '2': return format ? '20:30' : { hours: 20, minutes: 30 };
+            case '3': return format ? '01:40' : { hours: 1, minutes: 40 };
+            default: return format ? '--:--' : null;
+        }
+    }
+
     switch (String(shift)) {
         case '1': return format ? '06:45' : { hours: 6, minutes: 45 };
         case '2': return format ? '16:35' : { hours: 16, minutes: 35 };

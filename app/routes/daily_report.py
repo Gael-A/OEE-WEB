@@ -918,6 +918,12 @@ def get_report_attribute_data():
                         '2': "17:20",
                         '3': "01:40"
                     }
+                elif pan == "FE":
+                    SHIFT_TARGETS = {
+                        '1': "10:30",
+                        '2': "20:30",
+                        '3': "01:40"
+                    }
                 else :                    
                     SHIFT_TARGETS = {
                         '1': "6:45",
